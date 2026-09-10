@@ -42,7 +42,6 @@ export const SearchPage = () => {
     setSearchParams({ q: searchInput.trim() });
   };
 
-  // Navigate to property dashboard in the same tab
   const handleViewProperty = (bbl) => {
     navigate(`/property/${bbl}`);
   };
@@ -167,7 +166,7 @@ export const SearchPage = () => {
               return (
                 <div
                   key={property.bbl}
-                  className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6"
+                  className="bg-[#FFFFFF] rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6"
                 >
                   <div className="space-y-3 sm:space-y-4 flex-1">
                     {/* Top Row Badges */}
@@ -198,7 +197,6 @@ export const SearchPage = () => {
                     </div>
 
                     {/* Property Meta Grid */}
-<<<<<<<< HEAD:frotnend/src/pages/SearchPage.jsx
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-3 border-t border-gray-100 text-xs">
                       <div>
                         <span className="text-[#667085] block font-medium uppercase text-[10px] sm:text-[11px]">Owner</span>
@@ -207,21 +205,10 @@ export const SearchPage = () => {
                       <div>
                         <span className="text-[#667085] block font-medium uppercase text-[10px] sm:text-[11px]">Lot / Building Area</span>
                         <span className="font-bold text-[#111827] block">
-========
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-gray-200/80">
-                      <div>
-                        <span className="text-[#667085] block font-bold uppercase text-xs tracking-wider mb-1">Owner</span>
-                        <span className="font-extrabold text-[#111827] text-sm sm:text-base truncate block">{property.owner}</span>
-                      </div>
-                      <div>
-                        <span className="text-[#667085] block font-bold uppercase text-xs tracking-wider mb-1">Lot / Building Area</span>
-                        <span className="font-extrabold text-[#111827] text-sm sm:text-base block">
->>>>>>>> 6726612c438012abe80863779702721c7da748e6:Frontend/src/pages/SearchPage.jsx
-                          {property.lotAreaSqFt.toLocaleString()} sq ft / {property.buildingAreaSqFt.toLocaleString()} sq ft
+                          {property.lotAreaSqFt?.toLocaleString()} sq ft / {property.buildingAreaSqFt?.toLocaleString()} sq ft
                         </span>
                       </div>
                       <div>
-<<<<<<<< HEAD:frotnend/src/pages/SearchPage.jsx
                         <span className="text-[#667085] block font-medium uppercase text-[10px] sm:text-[11px]">Year Built / Zoning</span>
                         <span className="font-bold text-[#111827] block">
                           {property.yearBuilt} • <span className="text-[#2563EB]">{property.zoning}</span>
@@ -229,17 +216,7 @@ export const SearchPage = () => {
                       </div>
                       <div>
                         <span className="text-[#667085] block font-medium uppercase text-[10px] sm:text-[11px]">Commercial FAR</span>
-                        <span className="font-bold text-[#111827] block">{property.far.commercial}</span>
-========
-                        <span className="text-[#667085] block font-bold uppercase text-xs tracking-wider mb-1">Year Built / Zoning</span>
-                        <span className="font-extrabold text-[#111827] text-sm sm:text-base block">
-                          {property.yearBuilt} • <span className="text-[#2563EB] font-black">{property.zoning}</span>
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[#667085] block font-bold uppercase text-xs tracking-wider mb-1">Commercial FAR</span>
-                        <span className="font-extrabold text-[#111827] text-sm sm:text-base block">{property.far.commercial}</span>
->>>>>>>> 6726612c438012abe80863779702721c7da748e6:Frontend/src/pages/SearchPage.jsx
+                        <span className="font-bold text-[#111827] block">{property.far?.commercial}</span>
                       </div>
                     </div>
                   </div>
