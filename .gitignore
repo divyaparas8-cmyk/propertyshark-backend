@@ -30,3 +30,7 @@ yarn-debug.log*
 .idea/
 *.suo
 *.sw?
+
+
+backend
+/backend
