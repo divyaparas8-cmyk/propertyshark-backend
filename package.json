@@ -5,11 +5,17 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
+    "build": "prisma generate && prisma db push",
+    "start": "prisma db push && node src/server.js",
     "dev": "nodemon src/server.js",
+    "seed": "node prisma/seed.js",
     "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",
