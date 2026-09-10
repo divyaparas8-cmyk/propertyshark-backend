@@ -54,22 +54,23 @@ export const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans selection:bg-[#4F46E5] selection:text-white pt-20">
+    <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans selection:bg-[#4F46E5] selection:text-white pt-16 sm:pt-20">
       {/* FIXED NAVBAR */}
       <Header />
 
       {/* 1. HERO + PROPERTY SEARCH SECTION */}
       <section
-        className="relative min-h-[85vh] sm:min-h-[90vh] flex flex-col justify-between text-white overflow-hidden bg-cover bg-center bg-fixed"
+        className="relative min-h-[80vh] sm:min-h-[90vh] flex flex-col justify-between text-white overflow-hidden bg-cover bg-center bg-fixed"
         style={{
           backgroundImage: `url('https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2070&auto=format&fit=crop')`,
+          backgroundAttachment: 'fixed',
         }}
       >
-        {/* Dark Overlay + Vibrant Tint (z-10) - Lightened center for clear background visibility */}
+        {/* Dark Overlay + Vibrant Tint (z-10) */}
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: `linear-gradient(180deg, rgba(10, 16, 32, 0.3) 0%, rgba(16, 24, 45, 0.35) 50%, rgba(10, 16, 32, 0.65) 100%)`,
+            background: `linear-gradient(180deg, rgba(10, 16, 32, 0.4) 0%, rgba(16, 24, 45, 0.45) 50%, rgba(10, 16, 32, 0.75) 100%)`,
           }}
         />
         <div
@@ -79,24 +80,24 @@ export const HomePage = () => {
           }}
         />
 
-        {/* Hero Central Content (relative z-20 for high z-index layout) */}
-        <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto py-16 sm:py-24 w-full">
+        {/* Hero Central Content (relative z-20) */}
+        <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto py-12 sm:py-24 w-full">
           {/* Eyebrow + Thin Gradient Line */}
-          <div className="inline-flex flex-col items-center mb-6">
-            <span className="text-xs font-mono font-bold tracking-[0.25em] text-[#A78BFA] uppercase mb-2">
+          <div className="inline-flex flex-col items-center mb-4 sm:mb-6">
+            <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#A78BFA] uppercase mb-2">
               PROPERTY INTELLIGENCE
             </span>
-            <div className="h-0.5 w-16 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] rounded-full" />
+            <div className="h-0.5 w-12 sm:w-16 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] rounded-full" />
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight mb-6 drop-shadow-sm">
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.12] sm:leading-[1.08] tracking-tight mb-4 sm:mb-6 drop-shadow-xs">
             Explore Every Property. <br />
             <span className="gradient-text-light">Understand What Matters.</span>
           </h1>
 
           {/* Supporting Text */}
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
+          <p className="text-sm sm:text-xl text-gray-300 max-w-2xl mx-auto mb-8 sm:mb-10 font-medium leading-relaxed px-2">
             Property records, valuation, permits, violations, zoning and more — connected in one place.
           </p>
 
@@ -104,10 +105,10 @@ export const HomePage = () => {
           <div id="hero-search-container" className="max-w-[780px] mx-auto">
             <form
               onSubmit={handleSearchSubmit}
-              className="relative flex flex-col sm:flex-row items-center gap-2 p-2 bg-[#10182D]/90 border border-white/25 rounded-2xl shadow-2xl backdrop-blur-xl transition-all focus-within:border-[#3B82F6] focus-within:ring-4 focus-within:ring-[#2563EB]/30"
+              className="relative flex flex-col sm:flex-row items-center gap-2 p-2 bg-[#10182D]/95 border border-white/25 rounded-2xl shadow-2xl backdrop-blur-xl transition-all focus-within:border-[#3B82F6] focus-within:ring-4 focus-within:ring-[#2563EB]/30"
             >
               <div className="relative flex-1 flex items-center w-full">
-                <Search className="w-6 h-6 text-gray-400 absolute left-4 pointer-events-none" />
+                <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 absolute left-3.5 sm:left-4 pointer-events-none" />
                 <input
                   id="hero-search-input"
                   type="text"
@@ -116,8 +117,8 @@ export const HomePage = () => {
                     setSearchQuery(e.target.value);
                     if (errorMsg) setErrorMsg('');
                   }}
-                  placeholder="Search by address, city, ZIP or BBL..."
-                  className="w-full pl-14 pr-10 py-4 h-14 bg-transparent text-white placeholder-gray-400 font-medium text-base sm:text-lg focus:outline-none"
+                  placeholder="Search address, city, ZIP or BBL..."
+                  className="w-full pl-11 sm:pl-14 pr-10 py-3.5 sm:py-4 h-12 sm:h-14 bg-transparent text-white placeholder-gray-400 font-medium text-sm sm:text-lg focus:outline-none"
                 />
                 {searchQuery && (
                   <button
@@ -133,14 +134,14 @@ export const HomePage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto px-8 h-14 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 text-white font-black rounded-xl shadow-xl shadow-indigo-500/30 flex items-center justify-center gap-2 text-sm sm:text-base tracking-wider transition-all transform active:scale-95 cursor-pointer whitespace-nowrap"
+                className="w-full sm:w-auto px-6 sm:px-8 h-12 sm:h-14 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 text-white font-black rounded-xl shadow-xl shadow-indigo-500/30 flex items-center justify-center gap-2 text-xs sm:text-base tracking-wider transition-all transform active:scale-95 cursor-pointer whitespace-nowrap"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
                     <span>SEARCH PROPERTY</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </>
                 )}
               </button>
@@ -153,26 +154,26 @@ export const HomePage = () => {
             )}
 
             {/* Verified Quick Parcel Suggestions */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400">
-              <span className="font-medium text-gray-400">Quick sample search:</span>
+            <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-gray-400">
+              <span className="font-medium text-gray-400 w-full sm:w-auto text-center sm:text-left mb-1 sm:mb-0">Quick sample search:</span>
               <button
                 type="button"
                 onClick={() => handleQuickSearch('42-07 12th St')}
-                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
+                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
               >
                 42-07 12th St (Queens)
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickSearch('4004580098')}
-                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
+                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
               >
                 BBL 4004580098
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickSearch('350 5th Ave')}
-                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
+                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
               >
                 350 5th Ave (Manhattan)
               </button>
@@ -182,49 +183,49 @@ export const HomePage = () => {
       </section>
 
       {/* 2. EXPLORE PROPERTY INTELLIGENCE */}
-      <section className="py-24 bg-[#F7F8FC] border-b border-[#E5E7EB]">
+      <section className="py-16 sm:py-24 bg-[#F7F8FC] border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-[0.2em] text-[#4F46E5] uppercase block mb-2">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+            <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.2em] text-[#4F46E5] uppercase block mb-2">
               DISCOVER MORE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-[#111827] tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-5xl font-black text-[#111827] tracking-tight mb-3 sm:mb-4">
               Explore Property Intelligence
             </h2>
-            <div className="h-1 w-20 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] rounded-full mx-auto mb-4" />
-            <p className="text-lg text-[#667085] font-normal leading-relaxed">
+            <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] rounded-full mx-auto mb-3 sm:mb-4" />
+            <p className="text-sm sm:text-lg text-[#667085] font-normal leading-relaxed">
               Go beyond a basic property record and see the details that shape a property.
             </p>
           </div>
 
           {/* TWO LARGE IMAGE CARDS */}
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
             {/* Card 1 */}
             <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E7EB] shadow-lg shadow-gray-200/50 hover:shadow-2xl transition-all duration-500 group flex flex-col">
-              <div className="relative h-[320px] sm:h-[400px] overflow-hidden">
+              <div className="relative h-[220px] sm:h-[320px] lg:h-[400px] overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2070&auto=format&fit=crop"
                   alt="NYC commercial property records"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A1020]/80 via-transparent to-transparent opacity-60" />
-                <span className="absolute top-4 left-4 bg-[#0A1020]/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+                <span className="absolute top-4 left-4 bg-[#0A1020]/80 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider">
                   PARCEL DATA
                 </span>
               </div>
-              <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
+              <div className="p-6 sm:p-8 lg:p-10 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#111827] mb-3">
+                  <h3 className="text-xl sm:text-3xl font-black text-[#111827] mb-2 sm:mb-3">
                     Property Records
                   </h3>
-                  <p className="text-[#667085] text-base leading-relaxed mb-6">
+                  <p className="text-[#667085] text-sm sm:text-base leading-relaxed mb-4 sm:mb-6">
                     Explore ownership, building details, lot information, zoning and public records.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={scrollToSearch}
-                  className="inline-flex items-center gap-2 text-sm font-extrabold text-[#2563EB] hover:text-[#4F46E5] uppercase tracking-wider transition-colors cursor-pointer group-hover:translate-x-1 duration-300"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-[#2563EB] hover:text-[#4F46E5] uppercase tracking-wider transition-colors cursor-pointer group-hover:translate-x-1 duration-300"
                 >
                   <span>EXPLORE RECORDS →</span>
                 </button>
@@ -233,30 +234,30 @@ export const HomePage = () => {
 
             {/* Card 2 */}
             <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E7EB] shadow-lg shadow-gray-200/50 hover:shadow-2xl transition-all duration-500 group flex flex-col">
-              <div className="relative h-[320px] sm:h-[400px] overflow-hidden">
+              <div className="relative h-[220px] sm:h-[320px] lg:h-[400px] overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2070&auto=format&fit=crop"
                   alt="NYC street history"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A1020]/80 via-transparent to-transparent opacity-60" />
-                <span className="absolute top-4 left-4 bg-[#0A1020]/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+                <span className="absolute top-4 left-4 bg-[#0A1020]/80 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider">
                   TIMELINE
                 </span>
               </div>
-              <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
+              <div className="p-6 sm:p-8 lg:p-10 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#111827] mb-3">
+                  <h3 className="text-xl sm:text-3xl font-black text-[#111827] mb-2 sm:mb-3">
                     Property History
                   </h3>
-                  <p className="text-[#667085] text-base leading-relaxed mb-6">
+                  <p className="text-[#667085] text-sm sm:text-base leading-relaxed mb-4 sm:mb-6">
                     Review sales, assessments, permits, violations and historical activity.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={scrollToSearch}
-                  className="inline-flex items-center gap-2 text-sm font-extrabold text-[#2563EB] hover:text-[#4F46E5] uppercase tracking-wider transition-colors cursor-pointer group-hover:translate-x-1 duration-300"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-[#2563EB] hover:text-[#4F46E5] uppercase tracking-wider transition-colors cursor-pointer group-hover:translate-x-1 duration-300"
                 >
                   <span>VIEW HISTORY →</span>
                 </button>
@@ -266,37 +267,37 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* 3. PROPERTY DATA CONNECTED IN ONE PLACE (Full-width cinematic section with fixed parallax) */}
+      {/* 3. PROPERTY DATA CONNECTED IN ONE PLACE */}
       <section
-        className="relative min-h-[550px] sm:min-h-[620px] flex items-center text-white overflow-hidden py-24 bg-cover bg-center bg-fixed"
+        className="relative min-h-[420px] sm:min-h-[580px] flex items-center text-white overflow-hidden py-16 sm:py-24 bg-cover bg-center bg-fixed"
         style={{
           backgroundImage: `url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070&auto=format&fit=crop')`,
+          backgroundAttachment: 'fixed',
         }}
       >
-        {/* Dark Navy Overlay on left (for text readability) + Light transparent right side (z-10) */}
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: `linear-gradient(90deg, rgba(10, 16, 32, 0.8) 0%, rgba(17, 28, 53, 0.45) 45%, rgba(10, 16, 32, 0.12) 100%)`,
+            background: `linear-gradient(90deg, rgba(10, 16, 32, 0.85) 0%, rgba(17, 28, 53, 0.6) 50%, rgba(10, 16, 32, 0.25) 100%)`,
           }}
         />
 
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-2xl">
-            <span className="text-xs font-mono font-bold tracking-[0.25em] text-[#A78BFA] uppercase block mb-3">
+            <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] text-[#A78BFA] uppercase block mb-2 sm:mb-3">
               CONNECTED DATA
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
+            <h2 className="text-2xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-4 sm:mb-6">
               Property Data. <br />
               <span className="gradient-text-light">Connected in One Place.</span>
             </h2>
-            <p className="text-gray-300 text-lg leading-relaxed mb-8">
+            <p className="text-gray-300 text-sm sm:text-lg leading-relaxed mb-6 sm:mb-8">
               Bring together property records, valuation, permits, violations, zoning and documents to understand the complete property story.
             </p>
             <button
               type="button"
               onClick={scrollToSearch}
-              className="px-8 py-4 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 text-white font-bold rounded-xl shadow-xl shadow-indigo-500/30 inline-flex items-center gap-2 text-sm uppercase tracking-wider transition-all transform active:scale-95 cursor-pointer"
+              className="px-6 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 text-white font-bold rounded-xl shadow-xl shadow-indigo-500/30 inline-flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wider transition-all transform active:scale-95 cursor-pointer"
             >
               <span>EXPLORE DATA →</span>
             </button>
@@ -304,35 +305,35 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* 4. EVERYTHING YOU NEED TO KNOW ABOUT A PROPERTY (Final main content section) */}
-      <section className="py-24 bg-white border-b border-[#E5E7EB]">
+      {/* 4. EVERYTHING YOU NEED TO KNOW ABOUT A PROPERTY */}
+      <section className="py-16 sm:py-24 bg-white border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
             {/* Left Text Content */}
             <div className="lg:col-span-5">
-              <span className="text-xs font-mono font-bold tracking-[0.25em] text-[#4F46E5] uppercase block mb-3">
+              <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] text-[#4F46E5] uppercase block mb-2 sm:mb-3">
                 PROPERTY RESEARCH
               </span>
-              <h2 className="text-3xl sm:text-5xl font-black text-[#111827] leading-tight tracking-tight mb-6">
+              <h2 className="text-2xl sm:text-5xl font-black text-[#111827] leading-tight tracking-tight mb-4 sm:mb-6">
                 Everything You Need <br className="hidden sm:inline" />
                 to Know About a Property
               </h2>
-              <p className="text-[#667085] text-lg leading-relaxed mb-8">
+              <p className="text-[#667085] text-sm sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 Go beyond a single record. Explore valuation history, taxes, permits, violations, contacts, documents, zoning and development information.
               </p>
               <button
                 type="button"
                 onClick={scrollToSearch}
-                className="px-8 py-4 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 inline-flex items-center gap-2 text-sm uppercase tracking-wider hover:opacity-95 transition-all cursor-pointer"
+                className="px-6 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 inline-flex items-center gap-2 text-xs sm:text-sm uppercase tracking-wider hover:opacity-95 transition-all cursor-pointer"
               >
                 <span>START RESEARCH →</span>
               </button>
             </div>
 
-            {/* Right Asymmetric Editorial Image Collage (4 images) */}
-            <div className="lg:col-span-7 grid grid-cols-12 gap-4 relative">
+            {/* Right Asymmetric Editorial Image Collage (Responsive for Mobile) */}
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 relative">
               {/* Image 1: Large Left */}
-              <div className="col-span-7 rounded-3xl overflow-hidden shadow-xl border border-gray-100 group h-[380px]">
+              <div className="sm:col-span-7 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-gray-100 group h-[220px] sm:h-[380px]">
                 <img
                   src="https://images.unsplash.com/photo-1546412414-8035e1776c9a?q=80&w=2070&auto=format&fit=crop"
                   alt="NYC Brownstone"
@@ -341,9 +342,9 @@ export const HomePage = () => {
               </div>
 
               {/* Stacked Right Column */}
-              <div className="col-span-5 flex flex-col gap-4">
-                {/* Image 2: Medium Top Right */}
-                <div className="rounded-2xl overflow-hidden shadow-md border border-gray-100 group h-[180px]">
+              <div className="sm:col-span-5 grid grid-cols-2 sm:flex sm:flex-col gap-3 sm:gap-4">
+                {/* Image 2: Top Right */}
+                <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-md border border-gray-100 group h-[130px] sm:h-[180px]">
                   <img
                     src="https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=2070&auto=format&fit=crop"
                     alt="Manhattan Skyline"
@@ -351,8 +352,8 @@ export const HomePage = () => {
                   />
                 </div>
 
-                {/* Image 3: Medium Bottom Right */}
-                <div className="rounded-2xl overflow-hidden shadow-md border border-gray-100 group h-[184px]">
+                {/* Image 3: Bottom Right */}
+                <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-md border border-gray-100 group h-[130px] sm:h-[184px]">
                   <img
                     src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
                     alt="Architectural details"
@@ -361,8 +362,8 @@ export const HomePage = () => {
                 </div>
               </div>
 
-              {/* Image 4: Overlapping Badge Image */}
-              <div className="absolute -bottom-6 left-6 w-36 h-36 rounded-2xl overflow-hidden shadow-2xl border-4 border-white hidden sm:block group">
+              {/* Image 4: Overlapping Badge Image (Desktop Only) */}
+              <div className="absolute -bottom-6 left-6 w-36 h-36 rounded-2xl overflow-hidden shadow-2xl border-4 border-white hidden md:block group">
                 <img
                   src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=2070&auto=format&fit=crop"
                   alt="Aerial city block"
