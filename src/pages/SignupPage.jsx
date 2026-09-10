@@ -1,131 +1,191 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Lock, Mail, User, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export const SignupPage = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { signup } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!fullName || !email || !password || !confirmPassword) {
+      setErrorMsg('Please fill in all fields.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMsg('Passwords do not match.');
+      return;
+    }
+
+    setErrorMsg('');
     setIsLoading(true);
 
-    const success = await signup(fullName, email, password, confirmPassword);
-    setIsLoading(false);
+    try {
+      const success = await signup(fullName, email, password, confirmPassword);
+      setIsLoading(false);
 
-    if (success) {
-      navigate('/home');
+      if (success) {
+        addToast('Account created successfully! Welcome to Property Intelligence.', 'success');
+        navigate('/home');
+      } else {
+        setErrorMsg('Failed to create account. Please try again.');
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setErrorMsg('An error occurred during account creation.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-brand-dark flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center filter blur-xs" />
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/90 to-brand-dark/70 z-0" />
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F7F8FC]">
+      {/* LEFT SIDE: Split-screen visual banner */}
+      <div className="lg:w-1/2 relative bg-[#0A1020] min-h-[320px] lg:min-h-screen flex flex-col justify-between p-8 sm:p-12 lg:p-16 overflow-hidden">
+        {/* Background NYC architecture image */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center filter saturate-110 brightness-90"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2070&auto=format&fit=crop')`,
+          }}
+        />
+        {/* Dark Navy + subtle blue-purple gradient overlay */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background: `linear-gradient(135deg, rgba(10, 16, 32, 0.88) 0%, rgba(17, 28, 53, 0.85) 55%, rgba(49, 46, 129, 0.8) 100%)`,
+          }}
+        />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md z-10 text-center">
-        <Link to="/" className="inline-flex items-center gap-3 group mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-accent to-rose-600 flex items-center justify-center shadow-xl shadow-brand-accent/40 group-hover:scale-105 transition-transform">
-            <Building2 className="w-6 h-6 text-white" />
-          </div>
-        </Link>
-        <h2 className="text-3xl font-extrabold text-white tracking-tight">
-          Property<span className="text-brand-accent">Intel</span>
-        </h2>
-        <p className="mt-2 text-sm text-gray-400">
-          Create your account for unlimited NYC property research
-        </p>
+        {/* Content over image overlay */}
+        <div className="relative z-20">
+          <Link to="/signup" className="inline-flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2563EB] via-[#4F46E5] to-[#6D28D9] flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Building2 className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-extrabold text-xl tracking-widest text-white uppercase">
+              PROPERTY <span className="text-[#A78BFA] font-light">INTELLIGENCE</span>
+            </span>
+          </Link>
+        </div>
+
+        <div className="relative z-20 my-auto py-12 max-w-lg">
+          <span className="text-xs font-mono font-semibold tracking-widest text-[#A78BFA] uppercase block mb-3">
+            JOIN REAL ESTATE PROFESSIONALS
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-4">
+            Research the property. <br />
+            <span className="gradient-text-light">Understand the story.</span>
+          </h1>
+          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+            Create an account to gain unlimited access to public tax records, assessment histories, zoning analysis, DOB filings, and 311 complaint tracking.
+          </p>
+        </div>
+
+        <div className="relative z-20 text-xs text-gray-400 font-medium">
+          © 2026 Property Intelligence. Verified NYC Data Platform.
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10 px-4">
-        <div className="bg-brand-dark-card border border-brand-dark-border py-8 px-6 shadow-2xl rounded-2xl sm:px-10 backdrop-blur-xl">
-          <div className="mb-6 border-b border-gray-700 pb-4">
-            <h3 className="text-xl font-bold text-white">Create Account</h3>
-            <p className="text-xs text-gray-400 mt-1">
-              Join real estate professionals, analysts, and investors.
+      {/* RIGHT SIDE: Clean Light Form */}
+      <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-16">
+        <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 border border-gray-200/80 shadow-xl shadow-gray-200/50">
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-[#111827] tracking-tight">Create your account</h2>
+            <p className="text-sm text-[#667085] mt-1">
+              Start researching NYC properties with complete public record context.
             </p>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          {errorMsg && (
+            <div className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+              {errorMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#111827] mb-2">
                 Full Name
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <User className="h-4 h-4 text-gray-400" />
-                </div>
+              <div className="relative">
+                <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 pointer-events-none" />
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Sarah Jenkins"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-brand-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-[#F7F8FC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:bg-white transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-                Work Email Address
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#111827] mb-2">
+                Email
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Mail className="h-4 h-4 text-gray-400" />
-                </div>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 pointer-events-none" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="s.jenkins@realtycapital.com"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-brand-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-[#F7F8FC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:bg-white transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#111827] mb-2">
                 Password
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Lock className="h-4 h-4 text-gray-400" />
-                </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 pointer-events-none" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-brand-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm transition-colors"
+                  className="w-full pl-10 pr-10 py-3 bg-[#F7F8FC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:bg-white transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3.5 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#111827] mb-2">
                 Confirm Password
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Lock className="h-4 h-4 text-gray-400" />
-                </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 pointer-events-none" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-brand-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-[#F7F8FC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:bg-white transition-all"
                 />
               </div>
             </div>
@@ -134,13 +194,13 @@ export const SignupPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-lg shadow-brand-accent/30 text-sm font-bold text-white bg-brand-accent hover:bg-brand-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition-all cursor-pointer disabled:opacity-50"
+                className="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#6D28D9] hover:opacity-95 transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? (
-                  <span>Creating Account...</span>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Create Account</span>
+                    <span>CREATE ACCOUNT</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -148,11 +208,11 @@ export const SignupPage = () => {
             </div>
           </form>
 
-          <div className="mt-6 text-center border-t border-gray-700/80 pt-5">
-            <p className="text-xs text-gray-400">
+          <div className="mt-8 text-center border-t border-gray-100 pt-6">
+            <p className="text-xs text-[#667085]">
               Already have an account?{' '}
-              <Link to="/login" className="font-bold text-brand-accent hover:underline">
-                Sign In
+              <Link to="/login" className="font-bold text-[#2563EB] hover:text-[#4F46E5] hover:underline ml-1">
+                LOGIN
               </Link>
             </p>
           </div>

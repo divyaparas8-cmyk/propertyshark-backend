@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Building2,
   Bookmark,
   Share2,
   Copy,
   ArrowLeft,
-  XCircle,
-  CheckCircle2,
   MapPin,
   FileText,
   DollarSign,
@@ -17,7 +15,7 @@ import {
   Contact,
   Landmark,
   Layers,
-  Sparkles,
+  Check,
 } from 'lucide-react';
 import { Header } from '../components/common/Header';
 import { propertyService } from '../services/propertyService';
@@ -38,7 +36,6 @@ import { DevelopmentTab } from '../components/property/tabs/DevelopmentTab';
 export const PropertyDashboardPage = () => {
   const { bbl = '4004580098', tab = 'overview' } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,29 +61,16 @@ export const PropertyDashboardPage = () => {
     }
   };
 
-  const handleBackToSearch = () => {
-    // Attempt window.close() since property opens in a new browser tab/window
-    try {
-      window.close();
-    } catch (e) {
-      // Fallback to navigate
-    }
-    // If window.close() was blocked or not closed, navigate to /search
-    setTimeout(() => {
-      navigate('/search');
-    }, 100);
-  };
-
   const handleShare = async () => {
     const shareUrl = window.location.href;
     if (navigator.share) {
       try {
         await navigator.share({
           title: `Property Intelligence — ${property?.address}`,
-          text: `Check out property records for ${property?.address} (BBL: ${property?.bbl})`,
+          text: `Property Intelligence report for ${property?.address} (BBL: ${property?.bbl})`,
           url: shareUrl,
         });
-        addToast('Property link shared successfully!', 'success');
+        addToast('Property URL shared successfully!', 'success');
         return;
       } catch (e) {
         // Fallback to clipboard
@@ -96,11 +80,16 @@ export const PropertyDashboardPage = () => {
     addToast('Property URL copied to clipboard!', 'success');
   };
 
-  const handleCopyDetails = () => {
+  const handleCopyAddress = () => {
     if (!property) return;
-    const summaryText = `${property.address}, ${property.city}, ${property.state} ${property.zip} | BBL: ${property.bbl} | BIN: ${property.bin} | Owner: ${property.owner} | Zoning: ${property.zoning}`;
-    navigator.clipboard.writeText(summaryText);
-    addToast('Property details copied to clipboard!', 'success');
+    navigator.clipboard.writeText(`${property.address}, ${property.city}, ${property.state} ${property.zip}`);
+    addToast('Property address copied to clipboard!', 'success');
+  };
+
+  const handleCopyBBL = () => {
+    if (!property) return;
+    navigator.clipboard.writeText(property.bbl);
+    addToast('BBL Number copied to clipboard!', 'success');
   };
 
   const tabsConfig = [
@@ -117,11 +106,11 @@ export const PropertyDashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col">
+      <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans">
         <Header transparent={false} />
         <div className="flex-1 flex flex-col items-center justify-center py-24">
-          <div className="w-12 h-12 border-4 border-brand-accent border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm font-semibold text-gray-500">Retrieving NYC Parcel Record BBL {bbl}...</p>
+          <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-sm font-semibold text-[#667085]">Retrieving NYC Parcel Record BBL {bbl}...</p>
         </div>
       </div>
     );
@@ -129,14 +118,14 @@ export const PropertyDashboardPage = () => {
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col">
+      <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans">
         <Header transparent={false} />
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Record Not Found</h2>
-          <p className="text-sm text-gray-500 mb-6">No public parcel record matches BBL {bbl}.</p>
+          <h2 className="text-2xl font-bold text-[#111827] mb-2">Property Record Not Found</h2>
+          <p className="text-sm text-[#667085] mb-6">No public parcel record matches BBL {bbl}.</p>
           <Link
             to="/search"
-            className="px-6 py-3 bg-brand-accent text-white font-bold rounded-xl text-sm hover:bg-brand-accent-hover transition-colors"
+            className="px-6 py-3 bg-[#0A1020] text-white font-bold rounded-xl text-sm hover:bg-[#10182D] transition-colors"
           >
             Back to Search
           </Link>
@@ -148,89 +137,102 @@ export const PropertyDashboardPage = () => {
   const saved = isSaved(property.bbl);
 
   return (
-    <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col">
+    <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans pt-20">
       {/* Header */}
-      <Header transparent={false} />
+      <Header />
 
-      {/* Property Header Banner */}
-      <div className="bg-brand-dark border-b border-brand-dark-border text-white pt-6 pb-8">
+      {/* Property Intelligence Header Banner */}
+      <div className="bg-[#0A1020] border-b border-white/10 text-white pt-8 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Actions Row */}
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <button
-              onClick={handleBackToSearch}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer"
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <Link
+              to="/search"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-gray-300 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>← Back to Search</span>
-            </button>
+            </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={handleCopyDetails}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
-                title="Copy Summary"
+                onClick={handleCopyAddress}
+                className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Copy Address"
               >
                 <Copy className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Copy Details</span>
+                <span>COPY ADDRESS</span>
+              </button>
+
+              <button
+                onClick={handleCopyBBL}
+                className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Copy BBL"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>COPY BBL</span>
               </button>
 
               <button
                 onClick={handleShare}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
                 title="Share Property Link"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Share</span>
+                <span>SHARE</span>
               </button>
 
               <button
                 onClick={() => toggleSaveProperty(property.bbl, property.address)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-5 py-2 rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-md ${
                   saved
-                    ? 'bg-rose-500 text-white shadow-md'
-                    : 'bg-brand-accent hover:bg-brand-accent-hover text-white shadow-md'
+                    ? 'bg-gradient-to-r from-[#4F46E5] to-[#6D28D9] text-white'
+                    : 'bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#6D28D9] text-white hover:opacity-95'
                 }`}
               >
                 <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-white' : ''}`} />
-                <span>{saved ? 'Saved' : 'Save Property'}</span>
+                <span>{saved ? 'SAVED PROPERTY' : 'SAVE PROPERTY'}</span>
               </button>
             </div>
           </div>
 
-          {/* Title & Details */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          {/* Title & Identifiers */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded bg-brand-accent text-white text-xs font-black uppercase tracking-wider">
-                  PROPERTY INTELLIGENCE
+              <div className="flex items-center gap-2.5 mb-2">
+                <span className="px-3 py-1 rounded bg-[#2563EB] text-white text-xs font-black uppercase tracking-wider">
+                  PROPERTY DASHBOARD
                 </span>
-                <span className="px-2.5 py-0.5 rounded bg-white/10 text-gray-300 text-xs font-mono font-semibold">
+                <span className="px-3 py-1 rounded bg-white/10 text-gray-300 text-xs font-mono font-bold uppercase">
                   {property.borough}
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
                 {property.address}
               </h1>
 
-              <p className="text-sm text-gray-300 font-medium flex items-center gap-2 mt-1.5">
-                <MapPin className="w-4 h-4 text-brand-accent shrink-0" />
+              <p className="text-base text-gray-300 font-medium flex items-center gap-2 mt-2">
+                <MapPin className="w-4 h-4 text-[#A78BFA] shrink-0" />
                 <span>
                   {property.city}, {property.state} {property.zip}
                 </span>
               </p>
             </div>
 
-            {/* BBL / BIN Badges */}
-            <div className="flex items-center gap-3 text-xs font-mono font-semibold">
-              <div className="bg-brand-dark-card px-3 py-2 rounded-xl border border-gray-700">
-                <span className="text-gray-400 block text-[10px] font-sans uppercase">BBL Number</span>
-                <span className="text-white text-sm font-bold">{property.bbl}</span>
+            {/* BBL & BIN Cards */}
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <div className="bg-[#10182D] px-4 py-3 rounded-2xl border border-white/15">
+                <span className="text-gray-400 block text-[10px] font-sans uppercase font-bold tracking-wider mb-0.5">
+                  BBL NUMBER
+                </span>
+                <span className="text-white text-base font-extrabold">{property.bbl}</span>
               </div>
-              <div className="bg-brand-dark-card px-3 py-2 rounded-xl border border-gray-700">
-                <span className="text-gray-400 block text-[10px] font-sans uppercase">BIN Number</span>
-                <span className="text-white text-sm font-bold">{property.bin}</span>
+              <div className="bg-[#10182D] px-4 py-3 rounded-2xl border border-white/15">
+                <span className="text-gray-400 block text-[10px] font-sans uppercase font-bold tracking-wider mb-0.5">
+                  BIN NUMBER
+                </span>
+                <span className="text-white text-base font-extrabold">{property.bin}</span>
               </div>
             </div>
           </div>
@@ -238,7 +240,7 @@ export const PropertyDashboardPage = () => {
       </div>
 
       {/* Sticky Tab Navigation Bar */}
-      <div className="sticky top-16 z-30 bg-white border-b border-gray-200 shadow-xs">
+      <div className="sticky top-20 z-40 bg-white border-b border-[#E5E7EB] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-1">
             {tabsConfig.map((t) => {
@@ -248,10 +250,10 @@ export const PropertyDashboardPage = () => {
                 <Link
                   key={t.id}
                   to={`/property/${bbl}/${t.id}`}
-                  className={`flex items-center gap-2 px-4 py-3.5 text-xs font-extrabold uppercase tracking-wider transition-all whitespace-nowrap border-b-2 cursor-pointer ${
+                  className={`flex items-center gap-2 px-4 py-3.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border-b-2 cursor-pointer ${
                     isActive
-                      ? 'border-brand-accent text-brand-accent bg-rose-50/50'
-                      : 'border-transparent text-gray-500 hover:text-brand-text hover:border-gray-300'
+                      ? 'border-[#2563EB] text-[#2563EB] bg-blue-50/50'
+                      : 'border-transparent text-[#667085] hover:text-[#111827] hover:border-gray-300'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -263,8 +265,8 @@ export const PropertyDashboardPage = () => {
         </div>
       </div>
 
-      {/* Main Tab Content View */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+      {/* Main Tab View Component */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1">
         {activeTab === 'overview' && <OverviewTab property={property} />}
         {activeTab === 'valuation' && <ValuationTab property={property} />}
         {activeTab === 'tax' && <TaxTab property={property} />}

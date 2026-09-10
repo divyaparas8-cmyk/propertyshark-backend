@@ -1,233 +1,223 @@
 import React from 'react';
-import { Layers, AlertCircle, ShieldAlert, Calculator, CheckCircle2, Info, Building } from 'lucide-react';
+import { Layers, ShieldCheck, Ruler, AlertTriangle, Map, Compass } from 'lucide-react';
 
 export const DevelopmentTab = ({ property }) => {
   if (!property) return null;
 
   const dev = property.development || {};
-  const eDetails = dev.eDesignationDetails || {};
-
-  // Calculations
-  const lotArea = property.lotAreaSqFt || 12000;
-  const buildingArea = property.buildingAreaSqFt || 12000;
-  const commercialFar = property.far?.commercial || 5;
-
-  const maxBuildableSqFt = lotArea * commercialFar; // 60,000
-  const remainingBuildableSqFt = Math.max(0, maxBuildableSqFt - buildingArea); // 48,000
+  const eDetails = dev.eDesignationDetails || {
+    effectiveDate: '11/12/2025',
+    hazardousMaterials: 'Yes',
+    airQuality: 'Yes',
+    noise: 'No',
+    ceqr: '25DCP001Q',
+    ulurp: 'C250176ZMQ; N250177ZRQ',
+    description:
+      'Air Quality - HVAC natural gas with low Nox only; Exhaust stack location limitations; Hazardous Materials* Phase I and Phase II Testing Protocol',
+  };
 
   return (
-    <div className="space-y-8">
-      {/* Zoning Overview Grid */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <Layers className="w-5 h-5 text-brand-accent" />
-          <span>Zoning & Designation Profile</span>
+    <div className="space-y-8 font-sans text-[#111827]">
+      {/* ZONING OVERVIEW */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[#2563EB]" />
+            <span>ZONING & DISTRICT DESIGNATION</span>
+          </div>
+          <span className="px-3 py-1 bg-blue-50 text-[#2563EB] text-xs font-mono font-bold rounded-md border border-blue-100">
+            LIC SPECIAL DISTRICT
+          </span>
         </h3>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Manufacturing Zoning</span>
-            <span className="text-lg font-black text-brand-accent mt-1 block">{property.zoning || 'M1-5A'}</span>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 text-sm">
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Manufacturing Zoning</span>
+            <span className="font-black text-[#2563EB] text-lg mt-1 block">{property.zoning || 'M1-5A'}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Special District</span>
-            <span className="text-lg font-black text-gray-900 mt-1 block">{property.specialDistrict || 'LIC'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Special District</span>
+            <span className="font-bold text-[#111827] text-base mt-1 block">
+              {property.specialDistrict || 'LIC'}
+            </span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Zoning Map</span>
-            <span className="text-lg font-black text-gray-900 mt-1 block">{property.zoningMap || '9B'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Zoning Map</span>
+            <span className="font-bold text-[#111827] text-base mt-1 block">{property.zoningMap || '9B'}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">MIH Area</span>
-            <span className="text-lg font-black text-rose-600 mt-1 block font-mono">{dev.mihArea || 'Not Found'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">MIH Area</span>
+            <span className="font-semibold text-gray-500 text-sm mt-1 block">{dev.mihArea || 'Not Found'}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">E-Designation</span>
-            <span className="text-lg font-black text-brand-accent mt-1 block font-mono">
-              {dev.eDesignation || 'E-848'}
+          <div className="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100">
+            <span className="text-xs text-[#4F46E5] font-bold uppercase block">E-Designation</span>
+            <span className="font-black text-[#4F46E5] text-lg mt-1 block">{dev.eDesignation || 'E-848'}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* E-DESIGNATION DETAILS CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-[#4F46E5]" />
+            <span>ENVIRONMENTAL E-DESIGNATION DETAILS (E-848)</span>
+          </div>
+          <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-mono font-bold rounded-md border border-amber-200">
+            ENVIRONMENTAL RESTRICTIONS
+          </span>
+        </h3>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm mb-6">
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Effective Date</span>
+            <span className="font-bold text-[#111827] mt-1 block">{eDetails.effectiveDate}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Hazardous Materials</span>
+            <span className="font-black text-rose-600 mt-1 block">{eDetails.hazardousMaterials}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Air Quality</span>
+            <span className="font-black text-rose-600 mt-1 block">{eDetails.airQuality}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Noise Mitigation</span>
+            <span className="font-bold text-gray-500 mt-1 block">{eDetails.noise}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">CEQR Number</span>
+            <span className="font-mono font-bold text-[#2563EB] mt-1 block">{eDetails.ceqr}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100 col-span-1 sm:col-span-3">
+            <span className="text-xs text-[#667085] font-bold uppercase block">ULURP Numbers</span>
+            <span className="font-mono font-bold text-[#111827] mt-1 block">{eDetails.ulurp}</span>
+          </div>
+        </div>
+
+        <div className="p-5 bg-indigo-50/40 rounded-2xl border border-indigo-100">
+          <span className="text-xs text-[#4F46E5] font-bold uppercase block mb-1">
+            E-Designation Requirement Description
+          </span>
+          <p className="text-xs font-medium text-[#111827] leading-relaxed">{eDetails.description}</p>
+        </div>
+      </div>
+
+      {/* FAR & BUILDABLE AREA CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <Ruler className="w-5 h-5 text-[#6D28D9]" />
+            <span>FAR & BUILDABLE AREA METRICS</span>
+          </div>
+          <span className="text-xs font-mono font-bold text-[#2563EB] uppercase">MAX FAR 5.0</span>
+        </h3>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold block uppercase">Lot Area</span>
+            <span className="font-black text-[#111827] mt-1 block">
+              {property.lotAreaSqFt.toLocaleString()} sq ft
+            </span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold block uppercase">Existing Building Area</span>
+            <span className="font-black text-[#111827] mt-1 block">
+              {property.buildingAreaSqFt.toLocaleString()} sq ft
+            </span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold block uppercase">Current FAR</span>
+            <span className="font-black text-[#111827] mt-1 block">{property.far.current}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold block uppercase">Commercial / Facility FAR</span>
+            <span className="font-black text-[#2563EB] mt-1 block">
+              {property.far.commercial} / {property.far.facility}
+            </span>
+          </div>
+
+          <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-100 col-span-1 sm:col-span-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-[#4F46E5] font-bold uppercase tracking-wider">
+                Maximum Buildable Area
+              </span>
+              <span className="px-2 py-0.5 bg-[#4F46E5] text-white text-[10px] font-bold rounded uppercase">
+                Calculated
+              </span>
+            </div>
+            <span className="font-black text-[#111827] text-2xl">
+              {property.far.maxBuildableSqFt.toLocaleString()} sq ft
+            </span>
+          </div>
+
+          <div className="p-5 bg-gradient-to-br from-indigo-50 to-purple-50/50 rounded-2xl border border-indigo-100 col-span-1 sm:col-span-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-[#6D28D9] font-bold uppercase tracking-wider">
+                Remaining Buildable Area
+              </span>
+              <span className="px-2 py-0.5 bg-[#6D28D9] text-white text-[10px] font-bold rounded uppercase">
+                Calculated
+              </span>
+            </div>
+            <span className="font-black text-[#2563EB] text-2xl">
+              {property.far.remainingBuildableSqFt.toLocaleString()} sq ft
             </span>
           </div>
         </div>
       </div>
 
-      {/* E-Designation Details */}
-      {dev.eDesignation && dev.eDesignation !== 'None' && (
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-          <h3 className="text-lg font-bold text-brand-text mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-            <ShieldAlert className="w-5 h-5 text-amber-600" />
-            <span>E-Designation Environmental Specifications ({dev.eDesignation})</span>
-          </h3>
-
-          <div className="space-y-6">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block uppercase">Effective Date</span>
-                <span className="font-bold text-gray-900 mt-0.5 block">{eDetails.effectiveDate || '11/12/2025'}</span>
-              </div>
-
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block uppercase">Hazardous Materials</span>
-                <span className="font-bold text-rose-600 mt-0.5 block">{eDetails.hazardousMaterials || 'Yes'}</span>
-              </div>
-
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block uppercase">Air Quality</span>
-                <span className="font-bold text-rose-600 mt-0.5 block">{eDetails.airQuality || 'Yes'}</span>
-              </div>
-
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block uppercase">Noise Standard</span>
-                <span className="font-bold text-gray-700 mt-0.5 block">{eDetails.noise || 'No'}</span>
-              </div>
-
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block uppercase">CEQR Number</span>
-                <span className="font-bold font-mono text-gray-900 mt-0.5 block">
-                  {eDetails.ceqr || '25DCP001Q'}
-                </span>
-              </div>
-
-              <div className="sm:col-span-3">
-                <span className="text-xs text-gray-400 font-semibold block uppercase">ULURP Numbers</span>
-                <span className="font-bold font-mono text-gray-900 mt-0.5 block">
-                  {eDetails.ulurp || 'C250176ZMQ; N250177ZRQ'}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <span className="text-xs text-gray-400 font-semibold block uppercase mb-1">Detailed Description</span>
-              <p className="text-xs text-gray-800 font-medium bg-amber-50/60 p-4 rounded-xl border border-amber-200/80 leading-relaxed">
-                {eDetails.description ||
-                  'Air Quality - HVAC natural gas with low Nox only; Exhaust stack location limitations; Hazardous Materials* Phase I and Phase II Testing Protocol'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Floor Area Ratio (FAR) & Buildable Area Section */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-          <span className="flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-emerald-600" />
-            Floor Area Ratio (FAR) & Buildable Area Calculations
-          </span>
-          <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg uppercase tracking-wider">
-            Calculated Engine
-          </span>
+      {/* ADDITIONAL STREET & MAP METRICS */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+          <Compass className="w-5 h-5 text-gray-500" />
+          <span>STREET FRONTAGE & REZONING INFORMATION</span>
         </h3>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Lot Area</span>
-            <span className="text-lg font-extrabold text-gray-900 mt-1 block">
-              {lotArea.toLocaleString()} sq ft
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Frontage</span>
+            <span className="font-semibold text-gray-500 mt-1 block">{dev.frontage || 'Not Found'}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Nearest Wide Street</span>
+            <span className="font-semibold text-gray-500 mt-1 block">
+              {dev.nearestWideStreet || 'Not Found'}
             </span>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Existing Building Area</span>
-            <span className="text-lg font-extrabold text-gray-900 mt-1 block">
-              {buildingArea.toLocaleString()} sq ft
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Distance to Wide Street</span>
+            <span className="font-semibold text-gray-500 mt-1 block">
+              {dev.distanceToWideStreet || 'Not Found'}
             </span>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Current FAR</span>
-            <span className="text-lg font-extrabold text-gray-900 mt-1 block">
-              {property.far.current}
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Rezoning Projects</span>
+            <span className="font-semibold text-gray-500 mt-1 block">
+              {dev.rezoningProjects || 'Not Confirmed'}
             </span>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Commercial FAR</span>
-            <span className="text-lg font-extrabold text-brand-accent mt-1 block">
-              {property.far.commercial}
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100 col-span-1 sm:col-span-2">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Planimetric Map</span>
+            <span className="font-semibold text-gray-500 mt-1 block">
+              {dev.planimetricMap || 'Not Found / Not Confirmed'}
             </span>
-          </div>
-
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Facility FAR</span>
-            <span className="text-lg font-extrabold text-gray-900 mt-1 block">
-              {property.far.facility}
-            </span>
-          </div>
-        </div>
-
-        {/* Calculated Results Highlights */}
-        <div className="grid sm:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-100">
-          <div className="bg-emerald-50/80 border border-emerald-200 p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                Maximum Buildable Area
-              </span>
-              <span className="px-2.5 py-0.5 bg-emerald-700 text-white text-[10px] font-black rounded uppercase">
-                Calculated
-              </span>
-            </div>
-            <span className="text-3xl font-black text-emerald-900 block">
-              {maxBuildableSqFt.toLocaleString()} sq ft
-            </span>
-            <span className="text-xs text-emerald-700 font-medium mt-2 block">
-              Formula: Lot Area (12,000 sq ft) × Commercial FAR (5) = 60,000 sq ft
-            </span>
-          </div>
-
-          <div className="bg-blue-50/80 border border-blue-200 p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
-                Remaining Buildable Area
-              </span>
-              <span className="px-2.5 py-0.5 bg-blue-700 text-white text-[10px] font-black rounded uppercase">
-                Calculated
-              </span>
-            </div>
-            <span className="text-3xl font-black text-blue-900 block">
-              {remainingBuildableSqFt.toLocaleString()} sq ft
-            </span>
-            <span className="text-xs text-blue-700 font-medium mt-2 block">
-              Formula: Max Buildable (60,000) - Existing Building Area (12,000) = 48,000 sq ft
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Additional Development Fields Table (Explicit Not Found) */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-4 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <Building className="w-5 h-5 text-gray-500" />
-          <span>Surrounding Parcel & Planimetric Specs</span>
-        </h3>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-8 text-sm">
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Frontage</span>
-            <span className="font-mono text-gray-500 mt-0.5 block">{dev.frontage || 'Not Found'}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Nearest Wide Street</span>
-            <span className="font-mono text-gray-500 mt-0.5 block">{dev.nearestWideStreet || 'Not Found'}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Distance to Wide Street</span>
-            <span className="font-mono text-gray-500 mt-0.5 block">{dev.distanceToWideStreet || 'Not Found'}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Rezoning Projects</span>
-            <span className="font-mono text-gray-500 mt-0.5 block">{dev.rezoningProjects || 'Not confirmed'}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Planimetric Map</span>
-            <span className="font-mono text-gray-500 mt-0.5 block">{dev.planimetricMap || 'Not Found / Not confirmed'}</span>
           </div>
         </div>
       </div>

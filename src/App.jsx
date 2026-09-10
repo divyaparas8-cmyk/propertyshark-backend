@@ -11,7 +11,6 @@ import { SignupPage } from './pages/SignupPage';
 import { HomePage } from './pages/HomePage';
 import { SearchPage } from './pages/SearchPage';
 import { SavedPropertiesPage } from './pages/SavedPropertiesPage';
-import { AboutPage } from './pages/AboutPage';
 import { PropertyDashboardPage } from './pages/PropertyDashboardPage';
 
 export function App() {
@@ -59,13 +58,14 @@ export function App() {
                 }
               />
               <Route
-                path="/about"
+                path="/saved-properties"
                 element={
                   <ProtectedRoute>
-                    <AboutPage />
+                    <SavedPropertiesPage />
                   </ProtectedRoute>
                 }
               />
+
 
               {/* Property Dashboard Routes with 9 Tab parameters */}
               <Route

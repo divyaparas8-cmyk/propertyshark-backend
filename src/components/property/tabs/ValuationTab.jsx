@@ -1,148 +1,144 @@
 import React from 'react';
-import { DollarSign, FileText, TrendingUp, Calendar, UserCheck, Tag } from 'lucide-react';
+import { DollarSign, FileText, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 
 export const ValuationTab = ({ property }) => {
   if (!property) return null;
 
-  const sale = property.lastSale || {};
-  const assessmentHistory = property.assessmentHistory || [];
+  const { lastSale, assessmentHistory = [] } = property;
 
-  // Data for visual trend chart
-  const chartData = [...assessmentHistory].reverse();
-  const maxVal = Math.max(...chartData.map((d) => d.marketValue), 2000000);
+  // Compute maximum market value for trend bar visualization
+  const maxMarketValue = Math.max(...assessmentHistory.map((item) => item.marketValue), 2000000);
 
   return (
-    <div className="space-y-8">
-      {/* Last Sale Card */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-          <span className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-emerald-600" />
-            Last Sale Transaction
-          </span>
-          <span className="text-xs font-mono px-2.5 py-1 rounded bg-gray-100 text-gray-600">
-            ACRIS Doc: {sale.documentId || 'Not Found'}
-          </span>
+    <div className="space-y-8 font-sans text-[#111827]">
+      {/* LAST SALE CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+          <DollarSign className="w-5 h-5 text-[#2563EB]" />
+          <span>LAST SALE RECORD</span>
         </h3>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Purchase Date</span>
-            <span className="font-extrabold text-gray-900 text-base mt-1 block">
-              {sale.purchaseDate || 'Not Found'}
-            </span>
-          </div>
+        {lastSale ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Purchase Date</span>
+              <span className="font-bold text-[#111827] mt-1 block">{lastSale.purchaseDate}</span>
+            </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Purchase Price</span>
-            <span className="font-extrabold text-emerald-600 text-xl mt-1 block">
-              ${sale.purchasePrice ? sale.purchasePrice.toLocaleString() : 'Not Found'}
-            </span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Purchase Price</span>
+              <span className="font-black text-[#2563EB] text-lg mt-1 block">
+                {lastSale.purchasePrice === 1 ? '$1 (Industrial Dev Agency Transfer)' : `$${lastSale.purchasePrice.toLocaleString()}`}
+              </span>
+            </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Document Type</span>
-            <span className="font-extrabold text-brand-text text-base mt-1 block">
-              {sale.documentType || 'Not Found'}
-            </span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Document Type</span>
+              <span className="font-bold text-[#111827] mt-1 block">{lastSale.documentType}</span>
+            </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Recorded Date</span>
-            <span className="font-extrabold text-gray-900 text-base mt-1 block">
-              {sale.recordedDate || 'Not Found'}
-            </span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Document ID</span>
+              <span className="font-mono font-bold text-[#111827] text-xs mt-1 block truncate">
+                {lastSale.documentId}
+              </span>
+            </div>
 
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Party 1 (Grantor)</span>
-            <span className="font-bold text-gray-900 mt-0.5 block">{sale.party1 || 'Not Found'}</span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Recorded Date</span>
+              <span className="font-bold text-[#111827] mt-1 block">{lastSale.recordedDate}</span>
+            </div>
 
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Party 2 (Grantee)</span>
-            <span className="font-bold text-gray-900 mt-0.5 block">{sale.party2 || 'Not Found'}</span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Party 1 (Grantor)</span>
+              <span className="font-bold text-[#111827] mt-1 block truncate" title={lastSale.party1}>
+                {lastSale.party1}
+              </span>
+            </div>
 
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Arm's Length Transfer</span>
-            <span className="font-bold text-rose-600 mt-0.5 block">{sale.armsLength || 'Not Found'}</span>
-          </div>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Party 2 (Grantee)</span>
+              <span className="font-bold text-[#111827] mt-1 block truncate" title={lastSale.party2}>
+                {lastSale.party2}
+              </span>
+            </div>
 
-          <div>
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Transaction Type</span>
-            <span className="font-bold text-gray-500 mt-0.5 block">{sale.transactionType || 'Not Found'}</span>
+            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+              <span className="text-xs text-[#667085] font-bold uppercase block">Arm's Length / Type</span>
+              <span className="font-semibold text-gray-500 mt-1 block">
+                {lastSale.armsLength || 'Not Found'} • {lastSale.transactionType || 'Not Found'}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="text-sm text-[#667085]">No verified last sale transaction recorded.</p>
+        )}
       </div>
 
-      {/* Valuation Trend Chart Section */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-brand-accent" />
-          <span>Market Value Growth Trend (10-Year Assessment Roll)</span>
+      {/* VALUATION TREND VISUAL CHART */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-[#4F46E5]" />
+            <span>10-YEAR ASSESSMENT & MARKET VALUE TREND</span>
+          </div>
+          <span className="text-xs text-[#667085] font-bold uppercase">NYC Tax Class 4</span>
         </h3>
 
-        {/* SVG Chart */}
-        <div className="h-64 w-full pt-4 pb-2">
-          <div className="h-48 flex items-end justify-between gap-2 border-b border-gray-200 px-2">
-            {chartData.map((item, idx) => {
-              const heightPct = Math.round((item.marketValue / maxVal) * 100);
-              return (
-                <div key={item.year} className="flex-1 flex flex-col items-center gap-2 group relative">
-                  {/* Tooltip */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-10 bg-brand-dark text-white text-[11px] font-bold py-1 px-2 rounded shadow pointer-events-none whitespace-nowrap z-20">
-                    ${item.marketValue.toLocaleString()}
-                  </div>
-
-                  <div className="w-full bg-rose-50 rounded-t-lg group-hover:bg-rose-100 transition-colors flex items-end justify-center h-full">
-                    <div
-                      style={{ height: `${heightPct}%` }}
-                      className="w-full bg-gradient-to-t from-brand-accent to-rose-400 rounded-t-lg transition-all duration-500"
-                    />
+        <div className="space-y-4 pt-2">
+          {assessmentHistory.map((item) => {
+            const percentage = Math.round((item.marketValue / maxMarketValue) * 100);
+            return (
+              <div key={item.year} className="space-y-1">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="font-mono text-[#111827] w-20">{item.year}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[#667085]">Assessed: ${item.assessedValue.toLocaleString()}</span>
+                    <span className="text-[#2563EB] font-black">Market: ${item.marketValue.toLocaleString()}</span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          <div className="flex justify-between text-[11px] font-semibold text-gray-500 pt-3 px-2">
-            {chartData.map((item) => (
-              <span key={item.year} className="flex-1 text-center">
-                {item.year}
-              </span>
-            ))}
-          </div>
+                <div className="w-full bg-[#F7F8FC] h-3.5 rounded-full overflow-hidden border border-gray-100 flex">
+                  <div
+                    className="bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] h-full rounded-full transition-all duration-500"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Assessment History Table */}
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-brand-text">10-Year Assessment History Roll</h3>
-          <p className="text-xs text-gray-500 mt-1">Official NYC Department of Finance tax assessment values.</p>
-        </div>
+      {/* ASSESSMENT HISTORY TABLE */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm overflow-hidden">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+          <Calendar className="w-5 h-5 text-[#6D28D9]" />
+          <span>HISTORICAL ASSESSMENT ROLL (10 YEARS)</span>
+        </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="bg-gray-50 text-[11px] font-extrabold uppercase tracking-wider text-gray-500 border-b border-gray-200">
-                <th className="py-3.5 px-6">Year</th>
-                <th className="py-3.5 px-6">Market Value</th>
-                <th className="py-3.5 px-6">Assessed Value</th>
-                <th className="py-3.5 px-6">Taxable Value</th>
-                <th className="py-3.5 px-6">Tax Class</th>
+              <tr className="border-b border-gray-200 bg-[#F7F8FC] text-[11px] font-bold uppercase tracking-wider text-[#667085]">
+                <th className="py-3.5 px-4 rounded-l-xl">Year</th>
+                <th className="py-3.5 px-4">Market Value</th>
+                <th className="py-3.5 px-4">Assessed Value</th>
+                <th className="py-3.5 px-4">Taxable Value</th>
+                <th className="py-3.5 px-4 rounded-r-xl">Tax Class</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+            <tbody className="divide-y divide-gray-100 font-medium text-[#111827]">
               {assessmentHistory.map((row) => (
-                <tr key={row.year} className="hover:bg-rose-50/40 transition-colors">
-                  <td className="py-4 px-6 font-bold text-brand-text">{row.year}</td>
-                  <td className="py-4 px-6 font-bold text-gray-900">${row.marketValue.toLocaleString()}</td>
-                  <td className="py-4 px-6 text-gray-700">${row.assessedValue.toLocaleString()}</td>
-                  <td className="py-4 px-6 text-gray-700">
+                <tr key={row.year} className="hover:bg-blue-50/30 transition-colors">
+                  <td className="py-3.5 px-4 font-mono font-bold text-[#2563EB]">{row.year}</td>
+                  <td className="py-3.5 px-4 font-black">${row.marketValue.toLocaleString()}</td>
+                  <td className="py-3.5 px-4">${row.assessedValue.toLocaleString()}</td>
+                  <td className="py-3.5 px-4">
                     {row.taxableValue > 0 ? `$${row.taxableValue.toLocaleString()}` : '$0'}
                   </td>
-                  <td className="py-4 px-6 font-semibold">Class {row.taxClass}</td>
+                  <td className="py-3.5 px-4 font-mono text-xs font-bold text-[#4F46E5]">
+                    Tax Class {row.taxClass}
+                  </td>
                 </tr>
               ))}
             </tbody>

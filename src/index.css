@@ -1,13 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: #F7F7F5;
-    color: #202020;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  html {
+    scroll-behavior: smooth;
   }
+  body {
+    background-color: #F7F8FC;
+    color: #111827;
+    font-family: 'Inter', 'Manrope', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 50%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-light {
+  background: linear-gradient(135deg, #FFFFFF 0%, #DBEAFE 50%, #A78BFA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 50%, #6D28D9 100%);
+}
+
+.bg-gradient-indigo {
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+}
+
+.bg-gradient-navy {
+  background: linear-gradient(135deg, #0A1020 0%, #111C35 55%, #312E81 100%);
 }
 
 /* Custom Scrollbar for sleek horizontal tabs and tables */
@@ -17,26 +47,25 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #0A1020;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #3B82F6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #4F46E5;
 }
 
-/* Smooth Tab Animations */
-.tab-active {
-  color: #EF4050;
-  border-bottom-color: #EF4050;
+/* Hide scrollbar for clean UI elements */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Hero gradient overlays */
-.hero-overlay {
-  background: linear-gradient(180deg, rgba(32, 37, 42, 0.85) 0%, rgba(32, 37, 42, 0.95) 100%);
-}

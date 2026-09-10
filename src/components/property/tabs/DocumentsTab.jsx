@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, ImageOff, Lock, AlertCircle, FileCheck, ExternalLink } from 'lucide-react';
+import { FileText, ShieldAlert, FileCheck } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
 
 export const DocumentsTab = ({ property }) => {
@@ -7,111 +7,143 @@ export const DocumentsTab = ({ property }) => {
 
   if (!property) return null;
 
-  const docs = property.documents || {};
-  const deed = docs.deedSummary || {};
-  const acrisDocs = docs.acrisDocuments || [];
+  const docsData = property.documents || {};
+  const deed = docsData.deedSummary || {
+    documentType: 'DEED',
+    documentId: '2017110801341001',
+    documentDate: '10/26/2017',
+    recordedDate: '11/14/2017',
+    amount: 1,
+    party1: 'NEW YORK CITY INDUSTRIAL DEVELOPMENT AGENCY',
+    party2: 'JORICH, LLC',
+  };
+
+  const acrisDocs = docsData.acrisDocuments || [
+    {
+      documentId: '2017110801341001',
+      documentType: 'DEED',
+      date: '10/26/2017',
+      amount: 1,
+      party1: 'NEW YORK CITY INDUSTRIAL DEVELOPMENT AGENCY',
+      party2: 'JORICH, LLC',
+    },
+    {
+      documentId: '2017110801341002',
+      documentType: 'AGREEMENT',
+      date: '10/26/2017',
+      amount: 0,
+      party1: 'JORICH, LLC',
+      party2: 'CITY VENDORS WHOLESALE LLC',
+    },
+  ];
 
   return (
-    <div className="space-y-8">
-      {/* Deed Summary Card */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-          <span className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-brand-accent" />
-            Primary Recorded Deed Summary
-          </span>
-          <span className="font-mono text-xs px-2.5 py-1 rounded bg-gray-100 font-bold text-gray-700">
-            Document ID: {deed.documentId || 'Not Found'}
+    <div className="space-y-8 font-sans text-[#111827]">
+      {/* DEED SUMMARY CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-[#2563EB]" />
+            <span>DEED SUMMARY</span>
+          </div>
+          <span className="px-3 py-1 bg-blue-50 text-[#2563EB] text-xs font-mono font-bold rounded-md border border-blue-100">
+            ACRIS RECORDED
           </span>
         </h3>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Document Type</span>
-            <span className="font-extrabold text-gray-900 text-base mt-1 block">{deed.documentType || 'DEED'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Document Type</span>
+            <span className="font-bold text-[#111827] mt-1 block">{deed.documentType}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Document Date</span>
-            <span className="font-extrabold text-gray-900 text-base mt-1 block">{deed.documentDate || 'Not Found'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Document ID</span>
+            <span className="font-mono font-bold text-[#2563EB] text-xs mt-1 block truncate">{deed.documentId}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Recorded Date</span>
-            <span className="font-extrabold text-gray-900 text-base mt-1 block">{deed.recordedDate || 'Not Found'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Document Date</span>
+            <span className="font-bold text-[#111827] mt-1 block">{deed.documentDate}</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <span className="text-xs text-gray-400 font-semibold uppercase block">Consideration Amount</span>
-            <span className="font-extrabold text-emerald-600 text-base mt-1 block">
-              ${deed.amount ? deed.amount.toLocaleString() : '1'}
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Recorded Date</span>
+            <span className="font-bold text-[#111827] mt-1 block">{deed.recordedDate}</span>
+          </div>
+
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Amount</span>
+            <span className="font-black text-[#111827] mt-1 block">
+              {deed.amount === 1 ? '$1' : `$${deed.amount.toLocaleString()}`}
             </span>
           </div>
 
-          <div className="sm:col-span-2">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Party 1 (Grantor)</span>
-            <span className="font-bold text-gray-900 mt-0.5 block">{deed.party1 || 'Not Found'}</span>
-          </div>
-
-          <div className="sm:col-span-2">
-            <span className="text-xs text-gray-400 font-semibold block uppercase">Party 2 (Grantee)</span>
-            <span className="font-bold text-gray-900 mt-0.5 block">{deed.party2 || 'Not Found'}</span>
+          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100 col-span-1 sm:col-span-3">
+            <span className="text-xs text-[#667085] font-bold uppercase block">Transacting Parties</span>
+            <p className="font-semibold text-xs text-[#111827] mt-1">
+              <strong>Grantor (Party 1):</strong> {deed.party1} <br />
+              <strong>Grantee (Party 2):</strong> {deed.party2}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Liens Section */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-sm">
-        <h3 className="text-lg font-bold text-brand-text mb-3 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-gray-500" />
-          <span>Active Tax Liens & Mechanic Liens</span>
+      {/* LIENS CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-[#4F46E5]" />
+            <span>LIENS & ENCUMBRANCES</span>
+          </div>
+        </h3>
+        <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-200 text-xs font-mono font-bold text-[#667085]">
+          LIENS: Not Found
+        </div>
+      </div>
+
+      {/* TITLE DOCUMENTS TABLE */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2">
+            <FileCheck className="w-5 h-5 text-[#6D28D9]" />
+            <span>ACRIS TITLE DOCUMENTS</span>
+          </div>
+          <span className="text-xs font-mono font-bold text-gray-400 uppercase">NYC ACRIS Database</span>
         </h3>
 
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between text-xs font-semibold text-gray-600">
-          <span>Official Public Recording Status:</span>
-          <span className="px-3 py-1 bg-white border border-gray-300 rounded-lg text-gray-900 font-bold font-mono">
-            {docs.liens || 'Not Found'}
-          </span>
-        </div>
-      </div>
-
-      {/* ACRIS Title Documents Table */}
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-brand-text flex items-center gap-2">
-            <FileCheck className="w-5 h-5 text-emerald-600" />
-            <span>ACRIS Recorded Title Documents</span>
-          </h3>
-          <p className="text-xs text-gray-500 mt-1">
-            ACRIS legal documents filed for BBL: {property.bbl} (Datasets 8h5j-fqxa & bnx9-e6tj).
-          </p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="bg-gray-50 text-[11px] font-extrabold uppercase tracking-wider text-gray-500 border-b border-gray-200">
-                <th className="py-3.5 px-6">Document ID</th>
-                <th className="py-3.5 px-6">Document Type</th>
-                <th className="py-3.5 px-6">Recording Date</th>
-                <th className="py-3.5 px-6">Amount</th>
-                <th className="py-3.5 px-6 text-right">View Document</th>
+              <tr className="border-b border-gray-200 bg-[#F7F8FC] text-[11px] font-bold uppercase tracking-wider text-[#667085]">
+                <th className="py-3.5 px-4 rounded-l-xl">Document ID</th>
+                <th className="py-3.5 px-4">Document Type</th>
+                <th className="py-3.5 px-4">Date</th>
+                <th className="py-3.5 px-4">Amount</th>
+                <th className="py-3.5 px-4 rounded-r-xl text-right">View Document</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium text-gray-700">
-              {acrisDocs.map((doc, idx) => (
-                <tr key={idx} className="hover:bg-rose-50/40 transition-colors">
-                  <td className="py-4 px-6 font-mono font-bold text-brand-text">{doc.documentId}</td>
-                  <td className="py-4 px-6 font-semibold">{doc.documentType}</td>
-                  <td className="py-4 px-6 text-gray-600">{doc.date}</td>
-                  <td className="py-4 px-6 font-bold text-gray-900">
-                    ${typeof doc.amount === 'number' ? doc.amount.toLocaleString() : doc.amount}
+            <tbody className="divide-y divide-gray-100 font-medium text-[#111827]">
+              {acrisDocs.map((doc) => (
+                <tr key={doc.documentId} className="hover:bg-blue-50/30 transition-colors">
+                  <td className="py-4 px-4 font-mono font-bold text-xs text-[#2563EB]">{doc.documentId}</td>
+                  <td className="py-4 px-4 font-bold text-xs">{doc.documentType}</td>
+                  <td className="py-4 px-4 font-mono text-xs text-gray-600">{doc.date}</td>
+                  <td className="py-4 px-4 font-black">
+                    {doc.amount === 1 ? '$1' : doc.amount > 0 ? `$${doc.amount.toLocaleString()}` : '$0'}
                   </td>
-                  <td className="py-4 px-6 text-right">
-                    {/* Disabled button showing "Document image unavailable" */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-semibold cursor-not-allowed border border-gray-200" title="Document image unavailable">
-                      <ImageOff className="w-3.5 h-3.5" />
-                      <span>Document image unavailable</span>
+                  <td className="py-4 px-4 text-right">
+                    <div className="inline-flex flex-col items-end">
+                      <button
+                        disabled
+                        className="px-3.5 py-1.5 bg-gray-200 text-gray-400 text-xs font-bold rounded-lg cursor-not-allowed opacity-75"
+                        title="Document image unavailable"
+                      >
+                        View Document
+                      </button>
+                      <span className="text-[10px] text-gray-400 font-semibold mt-1">
+                        Document image unavailable
+                      </span>
                     </div>
                   </td>
                 </tr>
