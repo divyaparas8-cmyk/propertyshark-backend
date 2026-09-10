@@ -7,20 +7,7 @@ export const Header = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -45,10 +32,10 @@ export const Header = () => {
     }
   };
 
+  // Center Navbar links: Only Home & Saved Properties (Search is handled by SEARCH PROPERTY CTA)
   const navLinks = [
     { name: 'Home', path: '/home' },
-    { name: 'Search', path: '/search', onClick: handleSearchClick },
-    { name: 'Saved Properties', path: '/saved' },
+    { name: 'Saved Properties', path: '/saved-properties' },
   ];
 
   return (
@@ -66,29 +53,28 @@ export const Header = () => {
           </div>
         </Link>
 
-        {/* CENTER: Desktop Navigation (Home, Search, Saved Properties) */}
-        <nav className="hidden md:flex items-center gap-2">
-          {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
-            return (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={link.onClick}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-                  isActive
-                    ? 'text-white bg-white/10 shadow-inner'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {link.name}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* RIGHT: Navigation Links, SEARCH PROPERTY CTA & User / Logout */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Desktop Navigation (Home, Saved Properties) placed on right side */}
+          <nav className="flex items-center gap-1 mr-1">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path || (link.path === '/saved-properties' && location.pathname === '/saved');
+              return (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                    isActive
+                      ? 'text-white bg-white/10 shadow-inner'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* RIGHT: SEARCH PROPERTY CTA & User / Logout */}
-        <div className="hidden md:flex items-center gap-4">
           <button
             onClick={handleSearchClick}
             className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer"
@@ -98,7 +84,7 @@ export const Header = () => {
           </button>
 
           {user && (
-            <div className="flex items-center gap-3 border-l border-white/10 pl-4">
+            <div className="flex items-center gap-3 border-l border-white/10 pl-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center font-bold text-xs">
                   <User className="w-4 h-4" />
@@ -134,15 +120,12 @@ export const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#0A1020] border-b border-white/10 px-4 pt-2 pb-6 space-y-3">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
+            const isActive = location.pathname === link.path || (link.path === '/saved-properties' && location.pathname === '/saved');
             return (
               <Link
                 key={link.name}
                 to={link.path}
-                onClick={(e) => {
-                  setMobileMenuOpen(false);
-                  if (link.onClick) link.onClick(e);
-                }}
+                onClick={() => setMobileMenuOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${
                   isActive
                     ? 'bg-gradient-to-r from-[#2563EB] to-[#4F46E5] text-white'

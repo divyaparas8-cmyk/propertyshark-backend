@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { Search, Building, MapPin, ExternalLink, Filter, ArrowLeft, Bookmark } from 'lucide-react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { Search, Building, MapPin, Filter, ArrowLeft, Bookmark, ArrowRight } from 'lucide-react';
 import { Header } from '../components/common/Header';
 import { propertyService } from '../services/propertyService';
 import { useSavedProperties } from '../context/SavedPropertiesContext';
@@ -17,6 +17,7 @@ export const SearchPage = () => {
 
   const { isSaved, toggleSaveProperty } = useSavedProperties();
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSearchInput(queryParam);
@@ -41,11 +42,9 @@ export const SearchPage = () => {
     setSearchParams({ q: searchInput.trim() });
   };
 
-  // CRITICAL REQUIREMENT: VIEW PROPERTY must open in a NEW browser tab/window
-  const handleViewPropertyNewTab = (bbl) => {
-    const url = `/property/${bbl}`;
-    window.open(url, '_blank');
-    addToast(`Opening property intelligence dashboard (BBL: ${bbl}) in a new browser tab`, 'info');
+  // Navigate to property dashboard in the same tab
+  const handleViewProperty = (bbl) => {
+    navigate(`/property/${bbl}`);
   };
 
   const filteredResults = results.filter((item) => {
@@ -238,11 +237,11 @@ export const SearchPage = () => {
                     </button>
 
                     <button
-                      onClick={() => handleViewPropertyNewTab(property.bbl)}
+                      onClick={() => handleViewProperty(property.bbl)}
                       className="px-6 py-3.5 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#6D28D9] hover:opacity-95 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer whitespace-nowrap"
                     >
                       <span>VIEW PROPERTY</span>
-                      <ExternalLink className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

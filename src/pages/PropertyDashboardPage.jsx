@@ -107,7 +107,6 @@ export const PropertyDashboardPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans">
-        <Header transparent={false} />
         <div className="flex-1 flex flex-col items-center justify-center py-24">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-sm font-semibold text-[#667085]">Retrieving NYC Parcel Record BBL {bbl}...</p>
@@ -119,7 +118,6 @@ export const PropertyDashboardPage = () => {
   if (!property) {
     return (
       <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans">
-        <Header transparent={false} />
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <h2 className="text-2xl font-bold text-[#111827] mb-2">Property Record Not Found</h2>
           <p className="text-sm text-[#667085] mb-6">No public parcel record matches BBL {bbl}.</p>
@@ -137,10 +135,7 @@ export const PropertyDashboardPage = () => {
   const saved = isSaved(property.bbl);
 
   return (
-    <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans pt-20">
-      {/* Header */}
-      <Header />
-
+    <div className="min-h-screen bg-[#F7F8FC] text-[#111827] flex flex-col font-sans">
       {/* Property Intelligence Header Banner */}
       <div className="bg-[#0A1020] border-b border-white/10 text-white pt-8 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -151,7 +146,7 @@ export const PropertyDashboardPage = () => {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-gray-300 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>← Back to Search</span>
+              <span>Back to Search</span>
             </Link>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -240,7 +235,7 @@ export const PropertyDashboardPage = () => {
       </div>
 
       {/* Sticky Tab Navigation Bar */}
-      <div className="sticky top-20 z-40 bg-white border-b border-[#E5E7EB] shadow-sm">
+      <div className="sticky top-0 z-40 bg-white border-b border-[#E5E7EB] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-1">
             {tabsConfig.map((t) => {
