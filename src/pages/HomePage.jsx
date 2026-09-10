@@ -59,30 +59,27 @@ export const HomePage = () => {
       <Header />
 
       {/* 1. HERO + PROPERTY SEARCH SECTION */}
-      <section className="relative min-h-[85vh] sm:min-h-[90vh] flex flex-col justify-between bg-[#0A1020] text-white overflow-hidden">
-        {/* Background Image: Cinematic NYC skyline */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center filter saturate-110 brightness-[0.7]"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1496871455396-14e568c5ef19?q=80&w=2070&auto=format&fit=crop')`,
-          }}
-        />
-
-        {/* Dark Navy Overlay + Blue-Purple Gradient */}
+      <section
+        className="relative min-h-[85vh] sm:min-h-[90vh] flex flex-col justify-between text-white overflow-hidden bg-cover bg-center bg-fixed"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2070&auto=format&fit=crop')`,
+        }}
+      >
+        {/* Dark Overlay + Vibrant Tint (z-10) - Lightened center for clear background visibility */}
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: `linear-gradient(180deg, rgba(10, 16, 32, 0.7) 0%, rgba(16, 24, 45, 0.8) 50%, rgba(10, 16, 32, 0.95) 100%)`,
+            background: `linear-gradient(180deg, rgba(10, 16, 32, 0.3) 0%, rgba(16, 24, 45, 0.35) 50%, rgba(10, 16, 32, 0.65) 100%)`,
           }}
         />
         <div
-          className="absolute inset-0 z-10 opacity-35 mix-blend-overlay"
+          className="absolute inset-0 z-10 opacity-25 mix-blend-overlay"
           style={{
             background: `linear-gradient(135deg, #2563EB 0%, #4F46E5 50%, #7C3AED 100%)`,
           }}
         />
 
-        {/* Hero Central Content */}
+        {/* Hero Central Content (relative z-20 for high z-index layout) */}
         <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto py-16 sm:py-24 w-full">
           {/* Eyebrow + Thin Gradient Line */}
           <div className="inline-flex flex-col items-center mb-6">
@@ -93,7 +90,7 @@ export const HomePage = () => {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight mb-6 drop-shadow-md">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight mb-6 drop-shadow-sm">
             Explore Every Property. <br />
             <span className="gradient-text-light">Understand What Matters.</span>
           </h1>
@@ -269,20 +266,18 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* 3. PROPERTY DATA CONNECTED IN ONE PLACE (Full-width cinematic section) */}
-      <section className="relative min-h-[550px] sm:min-h-[620px] flex items-center bg-[#0A1020] text-white overflow-hidden py-24">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center filter saturate-110 brightness-75"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070&auto=format&fit=crop')`,
-          }}
-        />
-        {/* Dark Navy Overlay + Blue/Purple gradient */}
+      {/* 3. PROPERTY DATA CONNECTED IN ONE PLACE (Full-width cinematic section with fixed parallax) */}
+      <section
+        className="relative min-h-[550px] sm:min-h-[620px] flex items-center text-white overflow-hidden py-24 bg-cover bg-center bg-fixed"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070&auto=format&fit=crop')`,
+        }}
+      >
+        {/* Dark Navy Overlay on left (for text readability) + Light transparent right side (z-10) */}
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: `linear-gradient(90deg, rgba(10, 16, 32, 0.95) 0%, rgba(17, 28, 53, 0.85) 50%, rgba(49, 46, 129, 0.65) 100%)`,
+            background: `linear-gradient(90deg, rgba(10, 16, 32, 0.8) 0%, rgba(17, 28, 53, 0.45) 45%, rgba(10, 16, 32, 0.12) 100%)`,
           }}
         />
 
