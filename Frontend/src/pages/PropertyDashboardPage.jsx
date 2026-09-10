@@ -18,7 +18,7 @@ import {
   Check,
 } from 'lucide-react';
 import { Header } from '../components/common/Header';
-import { propertyService } from '../services/propertyService';
+import { propertyApi } from '../api/propertyApi';
 import { useSavedProperties } from '../context/SavedPropertiesContext';
 import { useToast } from '../context/ToastContext';
 
@@ -36,7 +36,7 @@ import { NeighborhoodTab } from '../components/property/tabs/NeighborhoodTab';
 import { RiskTab } from '../components/property/tabs/RiskTab';
 
 export const PropertyDashboardPage = () => {
-  const { bbl = '4004580098', tab = 'overview' } = useParams();
+  const { bbl, tab = 'overview' } = useParams();
   const navigate = useNavigate();
 
   const [property, setProperty] = useState(null);
@@ -48,16 +48,19 @@ export const PropertyDashboardPage = () => {
   const activeTab = tab.toLowerCase();
 
   useEffect(() => {
-    loadPropertyData();
+    if (bbl) {
+      loadPropertyData();
+    }
   }, [bbl]);
 
   const loadPropertyData = async () => {
     setLoading(true);
     try {
-      const data = await propertyService.getPropertyByBBL(bbl);
+      const data = await propertyApi.getPropertyByBbl(bbl);
       setProperty(data);
     } catch (err) {
-      console.error(err);
+      console.error('API Property load error:', err);
+      setProperty(null);
     } finally {
       setLoading(false);
     }

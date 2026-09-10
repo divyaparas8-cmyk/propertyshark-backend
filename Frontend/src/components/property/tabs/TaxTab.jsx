@@ -6,16 +6,12 @@ export const TaxTab = ({ property }) => {
 
   if (!property) return null;
 
-  const taxInfo = property.taxInfo || {
-    taxClass: '4',
-    marketValue: 1822000,
-    assessedValue: 819900,
-    taxableValue: 712530,
-  };
+  const taxInfo = property.taxInfo || {};
 
-  const marketVal = taxInfo.marketValue ? taxInfo.marketValue.toLocaleString() : '1,822,000';
-  const assessedVal = taxInfo.assessedValue ? taxInfo.assessedValue.toLocaleString() : '819,900';
-  const transitionalVal = taxInfo.taxableValue ? taxInfo.taxableValue.toLocaleString() : '712,530';
+  const marketVal = taxInfo.marketValue ? `$${Number(taxInfo.marketValue).toLocaleString()}` : 'Not available';
+  const assessedVal = taxInfo.assessedValue ? `$${Number(taxInfo.assessedValue).toLocaleString()}` : 'Not available';
+  const taxableVal = taxInfo.taxableValue ? `$${Number(taxInfo.taxableValue).toLocaleString()}` : 'Not available';
+  const annualTax = taxInfo.annualTax ? `$${Number(taxInfo.annualTax).toLocaleString()}` : 'Not available';
 
   return (
     <div className="space-y-6 text-[#111827] font-sans">
@@ -38,12 +34,12 @@ export const TaxTab = ({ property }) => {
 
         {taxBillVisible && (
           <div className="space-y-5">
-            {/* Top Summary Gray Banner */}
+            {/* Top Summary Banner */}
             <div className="bg-[#F8F9FA] rounded-2xl p-4 border border-gray-200/80 flex items-center justify-between text-xs sm:text-sm">
               <span className="text-gray-600 font-medium">
-                Property tax bill for 7/1/2026 to 6/30/2027
+                Annual Estimated Property Tax
               </span>
-              <span className="font-extrabold text-gray-900 text-sm sm:text-base">$77,295</span>
+              <span className="font-extrabold text-gray-900 text-sm sm:text-base">{annualTax}</span>
             </div>
 
             {/* Key Values in Calculating the Bill Card */}
@@ -53,13 +49,10 @@ export const TaxTab = ({ property }) => {
               </h3>
 
               <div className="space-y-1 text-xs sm:text-sm">
-                <TaxRow label="Tax class" value={taxInfo.taxClass || '4'} />
-                <TaxRow label="Market value" value={`$${marketVal}`} />
-                <TaxRow label="Assessed value" value={`$${assessedVal}`} />
-                <TaxRow label="Exemptions granted by city" value="$0" />
-                <TaxRow label="Transitional value" value={`$${transitionalVal}`} />
-                <TaxRow label="Transitional exemption value" value="$0" />
-                <TaxRow label="Tax abatements" value="$0" />
+                <TaxRow label="Tax class" value={taxInfo.taxClass || 'Not available'} />
+                <TaxRow label="Market value" value={marketVal} />
+                <TaxRow label="Assessed value" value={assessedVal} />
+                <TaxRow label="Taxable value" value={taxableVal} />
               </div>
             </div>
           </div>
@@ -76,3 +69,4 @@ const TaxRow = ({ label, value }) => (
     <span className="font-semibold text-[#111827]">{value}</span>
   </div>
 );
+

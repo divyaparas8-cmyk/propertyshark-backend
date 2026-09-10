@@ -2,7 +2,7 @@ import { savedPropertyModel } from '../models/savedPropertyModel.js';
 import { ConflictError, NotFoundError, ForbiddenError } from '../utils/errors.js';
 
 export const savedPropertyService = {
-  saveProperty: async (userId, { bbl, address }) => {
+  saveProperty: async (userId, { bbl, bin, address }) => {
     const existing = await savedPropertyModel.findSavedPropertyByUserAndBbl(userId, bbl);
     if (existing) {
       return { savedProperty: existing, alreadySaved: true };
@@ -11,6 +11,7 @@ export const savedPropertyService = {
     const savedProperty = await savedPropertyModel.createSavedProperty({
       userId,
       bbl,
+      bin,
       address,
     });
 

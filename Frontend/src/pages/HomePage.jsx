@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Search, ArrowRight, Building2, X, User, LogOut, ShieldCheck } from 'lucide-react';
 import { Header } from '../components/common/Header';
+import { SearchAutocomplete } from '../components/common/SearchAutocomplete';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -31,11 +32,6 @@ export const HomePage = () => {
     }, 250);
   };
 
-  const handleQuickSearch = (query) => {
-    setSearchQuery(query);
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-  };
-
   const scrollToSearch = () => {
     const searchContainer = document.getElementById('hero-search-container');
     const searchInput = document.getElementById('hero-search-input');
@@ -60,7 +56,7 @@ export const HomePage = () => {
 
       {/* 1. HERO + PROPERTY SEARCH SECTION */}
       <section
-        className="relative min-h-[80vh] sm:min-h-[90vh] flex flex-col justify-between text-white overflow-hidden bg-cover bg-center bg-fixed"
+        className="relative z-30 min-h-[80vh] sm:min-h-[90vh] flex flex-col justify-between text-white bg-cover bg-center bg-fixed"
         style={{
           backgroundImage: `url('https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2070&auto=format&fit=crop')`,
           backgroundAttachment: 'fixed',
@@ -102,82 +98,11 @@ export const HomePage = () => {
           </p>
 
           {/* PRIMARY SEARCH BOX */}
-          <div id="hero-search-container" className="max-w-[780px] mx-auto">
-            <form
-              onSubmit={handleSearchSubmit}
-              className="relative flex flex-col sm:flex-row items-center gap-2 p-2 bg-[#10182D]/95 border border-white/25 rounded-2xl shadow-2xl backdrop-blur-xl transition-all focus-within:border-[#3B82F6] focus-within:ring-4 focus-within:ring-[#2563EB]/30"
-            >
-              <div className="relative flex-1 flex items-center w-full">
-                <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 absolute left-3.5 sm:left-4 pointer-events-none" />
-                <input
-                  id="hero-search-input"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (errorMsg) setErrorMsg('');
-                  }}
-                  placeholder="Search address, city, ZIP or BBL..."
-                  className="w-full pl-11 sm:pl-14 pr-10 py-3.5 sm:py-4 h-12 sm:h-14 bg-transparent text-white placeholder-gray-400 font-medium text-sm sm:text-lg focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 text-gray-400 hover:text-white p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full sm:w-auto px-6 sm:px-8 h-12 sm:h-14 bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] hover:opacity-95 text-white font-black rounded-xl shadow-xl shadow-indigo-500/30 flex items-center justify-center gap-2 text-xs sm:text-base tracking-wider transition-all transform active:scale-95 cursor-pointer whitespace-nowrap"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <span>SEARCH PROPERTY</span>
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {errorMsg && (
-              <p className="mt-3 text-xs font-semibold text-rose-400 bg-rose-950/80 border border-rose-800 rounded-lg py-1.5 px-3 inline-block">
-                {errorMsg}
-              </p>
-            )}
-
-            {/* Verified Quick Parcel Suggestions */}
-            <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-gray-400">
-              <span className="font-medium text-gray-400 w-full sm:w-auto text-center sm:text-left mb-1 sm:mb-0">Quick sample search:</span>
-              <button
-                type="button"
-                onClick={() => handleQuickSearch('42-07 12th St')}
-                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
-              >
-                42-07 12th St (Queens)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickSearch('4004580098')}
-                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
-              >
-                BBL 4004580098
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickSearch('350 5th Ave')}
-                className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 hover:bg-[#3B82F6] hover:text-white border border-white/15 transition-all font-mono font-semibold"
-              >
-                350 5th Ave (Manhattan)
-              </button>
-            </div>
+          <div id="hero-search-container" className="max-w-[780px] mx-auto relative z-40">
+            <SearchAutocomplete
+              placeholder="Search address, city, ZIP or BBL..."
+              buttonText="SEARCH PROPERTY"
+            />
           </div>
         </div>
       </section>

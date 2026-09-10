@@ -5,8 +5,8 @@ export const savedPropertyController = {
   createSavedProperty: async (req, res, next) => {
     try {
       const userId = req.user.id;
-      const { bbl, address } = req.body;
-      const result = await savedPropertyService.saveProperty(userId, { bbl, address });
+      const { bbl, bin, address } = req.body;
+      const result = await savedPropertyService.saveProperty(userId, { bbl, bin, address });
 
       const status = result.alreadySaved ? 200 : 201;
       const message = result.alreadySaved

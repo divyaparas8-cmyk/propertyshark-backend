@@ -8,165 +8,255 @@ import { documentService } from './documentService.js';
 import { zoningService } from './zoningService.js';
 import { developmentService } from './developmentService.js';
 import { NotFoundError } from '../utils/errors.js';
-
-// Standard fallback properties matching verified datasets
-const mockFallbackProperties = [
-  {
-    bbl: '4004580098',
-    bin: '4005279',
-    address: '42-07 12th St',
-    publicRecordAddress: '42-12 13 STREET',
-    city: 'Long Island City',
-    state: 'NY',
-    zip: '11101',
-    borough: 'Queens',
-    owner: 'JORICH, LLC',
-    propertyType: 'Commercial / Industrial',
-    yearBuilt: 1931,
-    stories: 1,
-    units: 2,
-    lotAreaSqFt: 12000,
-    buildingAreaSqFt: 12000,
-    commercialAreaSqFt: 6000,
-    factoryAreaSqFt: 6000,
-  },
-  {
-    bbl: '1008350001',
-    bin: '1015862',
-    address: '350 5th Ave',
-    publicRecordAddress: '350 5 AVENUE',
-    city: 'New York',
-    state: 'NY',
-    zip: '10118',
-    borough: 'Manhattan',
-    owner: 'ESRT EMPIRE STATE BUILDING, L.L.C.',
-    propertyType: 'Commercial Office Tower',
-    yearBuilt: 1931,
-    stories: 102,
-    units: 240,
-    lotAreaSqFt: 91351,
-    buildingAreaSqFt: 2772000,
-    commercialAreaSqFt: 2772000,
-    factoryAreaSqFt: 0,
-  },
-  {
-    bbl: '1000230001',
-    bin: '1000045',
-    address: '1 Wall St',
-    publicRecordAddress: '1 WALL STREET',
-    city: 'New York',
-    state: 'NY',
-    zip: '10005',
-    borough: 'Manhattan',
-    owner: 'MACKLOWE PROPERTIES',
-    propertyType: 'Mixed-Use Residential/Retail',
-    yearBuilt: 1931,
-    stories: 50,
-    units: 566,
-    lotAreaSqFt: 44000,
-    buildingAreaSqFt: 1165000,
-    commercialAreaSqFt: 250000,
-    factoryAreaSqFt: 0,
-  },
-];
+import { env } from '../config/env.js';
 
 export const propertyService = {
-  searchProperties: async (query) => {
-    // 1. Fetch dynamic results from NYC Open Data PLUTO API
-    const plutoResults = await nycOpenDataService.searchPluto(query);
+  autocomplete: async (query) => {
+    if (!query || query.trim().length < 2) {
+      return [];
+    }
+    const cleanQuery = query.trim();
+    const geoUrl = `${env.NYC_GEOSEARCH_BASE_URL}/autocomplete?text=${encodeURIComponent(cleanQuery)}`;
 
+    try {
+      const response = await fetch(geoUrl, {
+        headers: { Accept: 'application/json' },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.features && Array.isArray(data.features)) {
+          return data.features.slice(0, 10).map((f) => {
+            const props = f.properties || {};
+            const coords = f.geometry?.coordinates || [];
+            const bbl = props.pad_bbl || props.bbl || props.addendum?.pad?.bbl || '';
+            const bin = props.pad_bin || props.bin || props.addendum?.pad?.bin || '';
+            return {
+              label: props.label || props.name || cleanQuery,
+              address: props.name || props.label || cleanQuery,
+              city: props.locality || props.borough || 'New York',
+              borough: props.borough || '',
+              state: 'NY',
+              zip: props.postalcode || '',
+              bbl: bbl ? String(bbl) : '',
+              bin: bin ? String(bin) : '',
+              latitude: coords[1] ? String(coords[1]) : '',
+              longitude: coords[0] ? String(coords[0]) : '',
+            };
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('NYC GeoSearch autocomplete error:', err.message);
+    }
+
+    // Try PLUTO search fallback
+    const plutoResults = await nycOpenDataService.searchPluto(cleanQuery);
+    if (plutoResults && plutoResults.length > 0) {
+      return plutoResults.slice(0, 8).map((p) => ({
+        label: `${p.address}, ${p.city || 'New York'}, NY ${p.zipcode || ''}`,
+        address: p.address,
+        city: p.city || 'New York',
+        borough: p.borough || '',
+        state: 'NY',
+        zip: p.zipcode || '',
+        bbl: String(p.bbl || ''),
+        bin: String(p.bin || ''),
+        latitude: String(p.latitude || ''),
+        longitude: String(p.longitude || ''),
+      }));
+    }
+
+    return [];
+  },
+
+  resolveProperty: async (input) => {
+    let queryText = typeof input === 'string' ? input : input.bbl || input.address || input.text || '';
+    let bbl = typeof input === 'object' ? input.bbl : queryText.match(/^\d{10}$/) ? queryText : '';
+    let bin = typeof input === 'object' ? input.bin : queryText.match(/^\d{7}$/) ? queryText : '';
+    let address = typeof input === 'object' ? input.address : queryText;
+
+    // 1. If BBL is provided, attempt to verify with PLUTO
+    if (bbl) {
+      const pluto = await nycOpenDataService.getPlutoByBBL(bbl);
+      if (pluto) {
+        return {
+          address: pluto.address || address || '',
+          city: pluto.city || 'New York',
+          state: 'NY',
+          zip: pluto.zipcode || '',
+          borough: pluto.borough || '',
+          bbl: String(pluto.bbl || bbl),
+          bin: String(pluto.bin || bin || ''),
+          latitude: String(pluto.latitude || ''),
+          longitude: String(pluto.longitude || ''),
+        };
+      }
+    }
+
+    // 2. Query GeoSearch search endpoint
+    if (queryText) {
+      try {
+        const geoUrl = `${env.NYC_GEOSEARCH_BASE_URL}/search?text=${encodeURIComponent(queryText)}`;
+        const response = await fetch(geoUrl, { headers: { Accept: 'application/json' } });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            const f = data.features[0];
+            const props = f.properties || {};
+            const coords = f.geometry?.coordinates || [];
+            const resolvedBbl = props.pad_bbl || props.bbl || props.addendum?.pad?.bbl || bbl;
+            const resolvedBin = props.pad_bin || props.bin || props.addendum?.pad?.bin || bin;
+
+            if (resolvedBbl) {
+              return {
+                address: props.name || props.label || address,
+                city: props.locality || props.borough || 'New York',
+                state: 'NY',
+                zip: props.postalcode || '',
+                borough: props.borough || '',
+                bbl: String(resolvedBbl),
+                bin: String(resolvedBin || ''),
+                latitude: coords[1] ? String(coords[1]) : '',
+                longitude: coords[0] ? String(coords[0]) : '',
+              };
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('NYC GeoSearch resolution error:', err.message);
+      }
+    }
+
+    // 3. Query PLUTO search endpoint
+    if (queryText) {
+      const plutoResults = await nycOpenDataService.searchPluto(queryText);
+      if (plutoResults && plutoResults.length > 0) {
+        const p = plutoResults[0];
+        return {
+          address: p.address || address,
+          city: p.city || 'New York',
+          state: 'NY',
+          zip: p.zipcode || '',
+          borough: p.borough || '',
+          bbl: String(p.bbl),
+          bin: String(p.bin || ''),
+          latitude: String(p.latitude || ''),
+          longitude: String(p.longitude || ''),
+        };
+      }
+    }
+
+    return null;
+  },
+
+  searchProperties: async (query) => {
+    if (!query || !query.trim()) return [];
+    const plutoResults = await nycOpenDataService.searchPluto(query.trim());
     if (plutoResults && plutoResults.length > 0) {
       return plutoResults.map((p) => propertyService.transformPlutoToSummary(p));
     }
-
-    // 2. Fallback to mock search filtering if NYC Open Data API returns empty or is unavailable
-    if (!query || !query.trim()) {
-      return mockFallbackProperties.map((p) => propertyService.getFullPropertyPayload(p.bbl));
-    }
-
-    const q = query.trim().toLowerCase();
-    const matches = mockFallbackProperties.filter((p) =>
-      p.bbl.includes(q) ||
-      p.bin.includes(q) ||
-      p.address.toLowerCase().includes(q) ||
-      p.city.toLowerCase().includes(q) ||
-      p.borough.toLowerCase().includes(q) ||
-      p.owner.toLowerCase().includes(q)
-    );
-
-    return Promise.all(matches.map((m) => propertyService.getPropertyByBBL(m.bbl)));
+    return [];
   },
 
   getPropertyByBBL: async (bbl) => {
-    // 1. Try PLUTO dataset first
+    // 1. Fetch PLUTO dataset first
     const pluto = await nycOpenDataService.getPlutoByBBL(bbl);
-    const fallback = mockFallbackProperties.find((p) => p.bbl === bbl) || mockFallbackProperties[0];
 
-    // Build base property info
-    const baseInfo = pluto
-      ? propertyService.transformPlutoToBaseInfo(pluto)
-      : fallback;
+    let baseInfo = null;
+    if (pluto) {
+      baseInfo = propertyService.transformPlutoToBaseInfo(pluto);
+      if (!baseInfo.bin || baseInfo.bin === '0') {
+        const resolved = await propertyService.resolveProperty({ bbl });
+        if (resolved && resolved.bin) {
+          baseInfo.bin = resolved.bin;
+        }
+      }
+    } else {
+      // Try resolving via GeoSearch / PAD for address & BIN if PLUTO is empty
+      const resolved = await propertyService.resolveProperty({ bbl });
+      if (resolved && resolved.bbl) {
+        baseInfo = {
+          bbl: resolved.bbl,
+          bin: resolved.bin || '',
+          address: resolved.address,
+          publicRecordAddress: resolved.address,
+          city: resolved.city,
+          state: 'NY',
+          zip: resolved.zip,
+          borough: resolved.borough,
+          owner: null,
+          propertyType: null,
+          yearBuilt: null,
+          stories: null,
+          units: null,
+          lotAreaSqFt: 0,
+          buildingAreaSqFt: 0,
+          commercialAreaSqFt: 0,
+          factoryAreaSqFt: 0,
+        };
+      } else {
+        return null;
+      }
+    }
 
     // 2. Fetch parallel NYC datasets dynamically
     const [assessmentRes, permitsRes, complaintsRes, acrisRes] = await Promise.all([
       nycOpenDataService.getAssessmentRecords(bbl),
-      nycOpenDataService.getDobPermits(baseInfo.bin),
-      nycOpenDataService.getComplaints311(baseInfo.address),
+      baseInfo.bin ? nycOpenDataService.getDobPermits(baseInfo.bin) : Promise.resolve({ data: [] }),
+      baseInfo.address ? nycOpenDataService.getComplaints311(baseInfo.address) : Promise.resolve({ data: [] }),
       nycOpenDataService.getAcrisLegals(bbl),
     ]);
 
-    const assessmentHistory = assessmentService.formatAssessmentHistory(assessmentRes.data);
+    const assessmentHistory = assessmentService.formatAssessmentHistory(assessmentRes?.data || []);
     const taxInfo = taxService.formatTaxInfo(pluto, assessmentHistory);
-    const permits = permitService.formatPermits(permitsRes.data);
-    const complaints311 = violationService.formatComplaints311(complaintsRes.data);
+    const permits = permitService.formatPermits(permitsRes?.data || []);
+    const complaints311 = violationService.formatComplaints311(complaintsRes?.data || []);
     const contacts = contactService.formatContacts(baseInfo.owner, permits);
-    const documents = documentService.formatDocuments(acrisRes.data);
+    const documents = documentService.formatDocuments(acrisRes?.data || []);
     const zoningInfo = zoningService.getZoningDetails(pluto);
     const buildableCalculated = developmentService.calculateBuildable(pluto);
 
     return {
+      identity: {
+        address: baseInfo.address,
+        bbl: baseInfo.bbl,
+        bin: baseInfo.bin,
+        city: baseInfo.city,
+        state: baseInfo.state,
+        zip: baseInfo.zip,
+        borough: baseInfo.borough,
+      },
       bbl: baseInfo.bbl,
       bin: baseInfo.bin,
       address: baseInfo.address,
-      publicRecordAddress: baseInfo.publicRecordAddress || `${baseInfo.address} STREET`,
-      city: baseInfo.city || 'Long Island City',
-      state: baseInfo.state || 'NY',
-      zip: baseInfo.zip || '11101',
-      borough: baseInfo.borough || 'Queens',
-      owner: baseInfo.owner || 'JORICH, LLC',
-      propertyType: baseInfo.propertyType || 'Commercial / Industrial',
-      yearBuilt: Number(baseInfo.yearBuilt || 1931),
-      stories: Number(baseInfo.stories || 1),
-      units: Number(baseInfo.units || 2),
-      lotAreaSqFt: Number(baseInfo.lotAreaSqFt || 12000),
-      buildingAreaSqFt: Number(baseInfo.buildingAreaSqFt || 12000),
-      commercialAreaSqFt: Number(baseInfo.commercialAreaSqFt || 6000),
-      factoryAreaSqFt: Number(baseInfo.factoryAreaSqFt || 6000),
+      publicRecordAddress: baseInfo.publicRecordAddress || baseInfo.address,
+      city: baseInfo.city,
+      state: baseInfo.state,
+      zip: baseInfo.zip,
+      borough: baseInfo.borough,
+      owner: baseInfo.owner,
+      propertyType: baseInfo.propertyType,
+      yearBuilt: baseInfo.yearBuilt ? Number(baseInfo.yearBuilt) : null,
+      stories: baseInfo.stories ? Number(baseInfo.stories) : null,
+      units: baseInfo.units ? Number(baseInfo.units) : null,
+      lotAreaSqFt: Number(baseInfo.lotAreaSqFt || 0),
+      buildingAreaSqFt: Number(baseInfo.buildingAreaSqFt || 0),
+      commercialAreaSqFt: Number(baseInfo.commercialAreaSqFt || 0),
+      factoryAreaSqFt: Number(baseInfo.factoryAreaSqFt || 0),
       zoning: zoningInfo.zoning,
       specialDistrict: zoningInfo.specialDistrict,
       zoningMap: zoningInfo.zoningMap,
       far: buildableCalculated.far,
       development: buildableCalculated.development,
-      lastSale: {
-        purchaseDate: '10/26/2017',
-        purchasePrice: 1,
-        documentType: 'DEED',
-        documentId: '2017110801341001',
-        recordedDate: '11/14/2017',
-        party1: 'NEW YORK CITY INDUSTRIAL DEVELOPMENT AGENCY',
-        party2: baseInfo.owner || 'JORICH, LLC',
-        armsLength: 'Not Found',
-        transactionType: 'Not Found',
-      },
+      lastSale: documents && documents.length > 0 ? documents[0] : null,
       assessmentHistory,
       taxInfo,
       permits,
       complaints311,
       contacts,
       financials: {
-        mortgageSummary: 'No active mortgages tied to this property.',
-        mortgageNote: 'Not verified from the currently available public API data.',
-        incomeExpenses: 'Individual RPIE income/expense data is not currently available in the connected dataset.',
+        mortgageSummary: 'No active mortgages verified in public dataset.',
+        incomeExpenses: 'RPIE income & expense data not available in public dataset.',
         status: 'not_available',
       },
       documents,
@@ -175,44 +265,44 @@ export const propertyService = {
 
   transformPlutoToSummary: (p) => {
     return {
-      bbl: p.bbl || '4004580098',
-      bin: p.bin || '4005279',
-      address: p.address || '42-07 12th St',
-      city: p.city || 'Long Island City',
+      bbl: String(p.bbl || ''),
+      bin: String(p.bin || ''),
+      address: p.address || '',
+      city: p.city || 'New York',
       state: 'NY',
-      zip: p.zipcode || '11101',
-      borough: p.borough || 'Queens',
-      owner: p.ownername || 'JORICH, LLC',
-      propertyType: p.bldgclass || 'Commercial / Industrial',
-      lotAreaSqFt: Number(p.lotarea || 12000),
-      buildingAreaSqFt: Number(p.bldgarea || 12000),
-      yearBuilt: Number(p.yearbuilt || 1931),
-      zoning: p.zonedist1 || 'M1-5A',
+      zip: p.zipcode || '',
+      borough: p.borough || '',
+      owner: p.ownername || null,
+      propertyType: p.bldgclass || null,
+      lotAreaSqFt: Number(p.lotarea || 0),
+      buildingAreaSqFt: Number(p.bldgarea || 0),
+      yearBuilt: p.yearbuilt ? Number(p.yearbuilt) : null,
+      zoning: p.zonedist1 || null,
       far: {
-        commercial: Number(p.commfar || 5),
+        commercial: Number(p.commfar || 0),
       },
     };
   },
 
   transformPlutoToBaseInfo: (p) => {
     return {
-      bbl: p.bbl,
-      bin: p.bin || '4005279',
-      address: p.address || '42-07 12th St',
-      publicRecordAddress: p.address,
-      city: p.city || 'Long Island City',
+      bbl: String(p.bbl || ''),
+      bin: String(p.bin || ''),
+      address: p.address || '',
+      publicRecordAddress: p.address || '',
+      city: p.city || 'New York',
       state: 'NY',
-      zip: p.zipcode || '11101',
-      borough: p.borough || 'Queens',
-      owner: p.ownername || 'JORICH, LLC',
-      propertyType: p.bldgclass || 'Commercial / Industrial',
-      yearBuilt: p.yearbuilt || 1931,
-      stories: p.numfloors || 1,
-      units: p.unitstotal || 2,
-      lotAreaSqFt: p.lotarea || 12000,
-      buildingAreaSqFt: p.bldgarea || 12000,
-      commercialAreaSqFt: p.comarea || 6000,
-      factoryAreaSqFt: p.factryarea || 6000,
+      zip: p.zipcode || '',
+      borough: p.borough || '',
+      owner: p.ownername || null,
+      propertyType: p.bldgclass || null,
+      yearBuilt: p.yearbuilt || null,
+      stories: p.numfloors || null,
+      units: p.unitstotal || null,
+      lotAreaSqFt: p.lotarea || 0,
+      buildingAreaSqFt: p.bldgarea || 0,
+      commercialAreaSqFt: p.comarea || 0,
+      factoryAreaSqFt: p.factryarea || 0,
     };
   },
 };

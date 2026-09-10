@@ -7,7 +7,7 @@ import { propertyService } from '../services/propertyService';
 import { useToast } from '../context/ToastContext';
 
 export const SavedPropertiesPage = () => {
-  const { savedBbls, toggleSaveProperty } = useSavedProperties();
+  const { savedProperties, toggleSaveProperty, loading: contextLoading } = useSavedProperties();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
@@ -15,15 +15,44 @@ export const SavedPropertiesPage = () => {
 
   useEffect(() => {
     loadSavedProperties();
-  }, [savedBbls]);
+  }, [savedProperties]);
 
   const loadSavedProperties = async () => {
     setLoading(true);
     try {
+      if (!savedProperties || savedProperties.length === 0) {
+        setProperties([]);
+        setLoading(false);
+        return;
+      }
+
       const items = [];
-      for (const bbl of savedBbls) {
-        const p = await propertyService.getPropertyByBBL(bbl);
-        if (p) items.push(p);
+      for (const item of savedProperties) {
+        try {
+          const p = await propertyService.getPropertyByBBL(item.bbl);
+          if (p) {
+            items.push(p);
+          } else {
+            items.push({
+              bbl: item.bbl,
+              bin: item.bin || 'N/A',
+              address: item.address,
+              city: 'New York',
+              state: 'NY',
+              zip: '',
+              borough: 'NYC',
+              owner: 'Public Record',
+              propertyType: 'Parcel Record',
+              lotAreaSqFt: 0,
+              buildingAreaSqFt: 0,
+              yearBuilt: 1931,
+              zoning: 'N/A',
+              far: { commercial: 1 },
+            });
+          }
+        } catch (err) {
+          console.warn(`Could not load property details for ${item.bbl}:`, err);
+        }
       }
       setProperties(items);
     } catch (err) {
@@ -34,7 +63,7 @@ export const SavedPropertiesPage = () => {
   };
 
   const handleViewProperty = (bbl) => {
-    navigate(`/property/${bbl}`);
+    window.open(`/property/${bbl}/overview`, '_blank');
   };
 
   return (

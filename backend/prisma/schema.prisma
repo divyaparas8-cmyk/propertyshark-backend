@@ -27,6 +27,7 @@ model SavedProperty {
   id        String   @id @default(cuid())
   userId    String
   bbl       String
+  bin       String?
   address   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

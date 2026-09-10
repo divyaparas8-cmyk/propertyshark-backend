@@ -1,13 +1,14 @@
 import prisma from '../config/db.js';
 
 export const savedPropertyModel = {
-  createSavedProperty: async ({ userId, bbl, address }) => {
+  createSavedProperty: async ({ userId, bbl, bin, address }) => {
     return prisma.savedProperty.create({
-      data: { userId, bbl, address },
+      data: { userId, bbl, bin: bin || null, address },
       select: {
         id: true,
         userId: true,
         bbl: true,
+        bin: true,
         address: true,
         createdAt: true,
         updatedAt: true,
@@ -23,6 +24,7 @@ export const savedPropertyModel = {
         id: true,
         userId: true,
         bbl: true,
+        bin: true,
         address: true,
         createdAt: true,
         updatedAt: true,
@@ -37,6 +39,7 @@ export const savedPropertyModel = {
         id: true,
         userId: true,
         bbl: true,
+        bin: true,
         address: true,
         createdAt: true,
         updatedAt: true,
@@ -56,6 +59,7 @@ export const savedPropertyModel = {
         id: true,
         userId: true,
         bbl: true,
+        bin: true,
         address: true,
         createdAt: true,
         updatedAt: true,

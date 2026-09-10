@@ -62,9 +62,13 @@ export const nycOpenDataService = {
    * Fetch Assessment roll records
    */
   getAssessmentRecords: async (bbl) => {
+    if (!bbl || bbl.length !== 10) return { status: 'unavailable', data: [] };
+    const boro = bbl[0];
+    const block = parseInt(bbl.slice(1, 6), 10);
+    const lot = parseInt(bbl.slice(6), 10);
     return nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.ASSESSMENT, {
-      $where: `bbl = '${bbl}'`,
-      $order: 'taxyr DESC',
+      $where: `parid = '${bbl}' OR (boro = '${boro}' AND block = '${block}' AND lot = '${lot}')`,
+      $order: 'year DESC',
       $limit: 10,
     });
   },
@@ -108,8 +112,12 @@ export const nycOpenDataService = {
    * Fetch E-Designation details
    */
   getEDesignations: async (bbl) => {
+    if (!bbl || bbl.length !== 10) return { status: 'unavailable', data: [] };
+    const boro = bbl[0];
+    const block = parseInt(bbl.slice(1, 6), 10);
+    const lot = parseInt(bbl.slice(6), 10);
     return nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.E_DESIGNATION, {
-      $where: `bbl = '${bbl}'`,
+      $where: `bbl = '${bbl}' OR (borough = '${boro}' AND block = '${block}' AND lot = '${lot}')`,
       $limit: 5,
     });
   },
@@ -118,9 +126,13 @@ export const nycOpenDataService = {
    * Fetch ACRIS Title Deeds & Legal Documents
    */
   getAcrisLegals: async (bbl) => {
+    if (!bbl || bbl.length !== 10) return { status: 'unavailable', data: [] };
+    const boro = bbl[0];
+    const block = parseInt(bbl.slice(1, 6), 10);
+    const lot = parseInt(bbl.slice(6), 10);
     return nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.ACRIS_LEGALS, {
-      $where: `bbl = '${bbl}'`,
-      $limit: 10,
+      $where: `borough = '${boro}' AND block = '${block}' AND lot = '${lot}'`,
+      $limit: 15,
     });
   },
 };

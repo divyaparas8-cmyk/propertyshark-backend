@@ -43,7 +43,7 @@ export const SearchPage = () => {
   };
 
   const handleViewProperty = (bbl) => {
-    navigate(`/property/${bbl}`);
+    window.open(`/property/${bbl}/overview`, '_blank');
   };
 
   const filteredResults = results.filter((item) => {

@@ -12,6 +12,7 @@ export const env = {
   DATABASE_URL: process.env.DATABASE_URL,
   JWT_SECRET: process.env.JWT_SECRET || 'fallback_jwt_secret_key_2026',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  NYC_GEOSEARCH_BASE_URL: process.env.NYC_GEOSEARCH_BASE_URL || 'https://geosearch.planninglabs.nyc/v2',
   NYC_OPEN_DATA: {
     BASE_URL: process.env.NYC_OPEN_DATA_BASE_URL || 'https://data.cityofnewyork.us',
     PLUTO: process.env.NYC_PLUTO_DATASET || '64uk-42ks',
