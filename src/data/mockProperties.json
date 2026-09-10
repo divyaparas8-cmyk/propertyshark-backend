@@ -1,0 +1,421 @@
+[
+  {
+    "bbl": "4004580098",
+    "bin": "4005279",
+    "address": "42-07 12th St",
+    "publicRecordAddress": "42-12 13 STREET",
+    "city": "Long Island City",
+    "state": "NY",
+    "zip": "11101",
+    "borough": "Queens",
+    "owner": "JORICH, LLC",
+    "propertyType": "Commercial / Industrial",
+    "yearBuilt": 1931,
+    "stories": 1,
+    "units": 2,
+    "lotAreaSqFt": 12000,
+    "buildingAreaSqFt": 12000,
+    "commercialAreaSqFt": 6000,
+    "factoryAreaSqFt": 6000,
+    "zoning": "M1-5A",
+    "specialDistrict": "LIC",
+    "zoningMap": "9B",
+    "far": {
+      "current": 1,
+      "commercial": 5,
+      "facility": 5,
+      "maxBuildableSqFt": 60000,
+      "remainingBuildableSqFt": 48000
+    },
+    "development": {
+      "mihArea": "Not Found",
+      "eDesignation": "E-848",
+      "eDesignationDetails": {
+        "effectiveDate": "11/12/2025",
+        "hazardousMaterials": "Yes",
+        "airQuality": "Yes",
+        "noise": "No",
+        "ceqr": "25DCP001Q",
+        "ulurp": "C250176ZMQ; N250177ZRQ",
+        "description": "Air Quality - HVAC natural gas with low Nox only; Exhaust stack location limitations; Hazardous Materials* Phase I and Phase II Testing Protocol"
+      },
+      "frontage": "Not Found",
+      "nearestWideStreet": "Not Found",
+      "distanceToWideStreet": "Not Found",
+      "rezoningProjects": "Not confirmed",
+      "planimetricMap": "Not Found / Not confirmed"
+    },
+    "lastSale": {
+      "purchaseDate": "10/26/2017",
+      "purchasePrice": 1,
+      "documentType": "DEED",
+      "documentId": "2017110801341001",
+      "recordedDate": "11/14/2017",
+      "party1": "NEW YORK CITY INDUSTRIAL DEVELOPMENT AGENCY",
+      "party2": "JORICH, LLC",
+      "armsLength": "Not Found",
+      "transactionType": "Not Found"
+    },
+    "assessmentHistory": [
+      { "year": "2025/26", "marketValue": 1657000, "assessedValue": 745650, "taxableValue": 664550, "taxClass": "4" },
+      { "year": "2024/25", "marketValue": 1582000, "assessedValue": 711900, "taxableValue": 642590, "taxClass": "4" },
+      { "year": "2023/24", "marketValue": 1462000, "assessedValue": 657900, "taxableValue": 622340, "taxClass": "4" },
+      { "year": "2022/23", "marketValue": 1394000, "assessedValue": 627300, "taxableValue": 608480, "taxClass": "4" },
+      { "year": "2021/22", "marketValue": 1350000, "assessedValue": 607500, "taxableValue": 583380, "taxClass": "4" },
+      { "year": "2020/21", "marketValue": 1413000, "assessedValue": 635850, "taxableValue": 551700, "taxClass": "4" },
+      { "year": "2019/20", "marketValue": 1357000, "assessedValue": 610650, "taxableValue": 515610, "taxClass": "4" },
+      { "year": "2018/19", "marketValue": 1308000, "assessedValue": 588600, "taxableValue": 481950, "taxClass": "4" },
+      { "year": "2017/18", "marketValue": 1054000, "assessedValue": 474300, "taxableValue": 0, "taxClass": "4" },
+      { "year": "2016/17", "marketValue": 998000, "assessedValue": 449100, "taxableValue": 0, "taxClass": "4" }
+    ],
+    "taxInfo": {
+      "taxClass": "4",
+      "marketValue": 1822000,
+      "assessedValue": 819900,
+      "taxableValue": 712530,
+      "rates": [
+        { "year": "2024/25", "rate": "10.762%" },
+        { "year": "2023/24", "rate": "10.592%" },
+        { "year": "2022/23", "rate": "10.646%" },
+        { "year": "2021/22", "rate": "10.755%" },
+        { "year": "2020/21", "rate": "10.694%" },
+        { "year": "2019/20", "rate": "10.537%" },
+        { "year": "2018/19", "rate": "10.514%" },
+        { "year": "2017/18", "rate": "10.514%" },
+        { "year": "2016/17", "rate": "10.574%" }
+      ]
+    },
+    "permits": [
+      {
+        "date": "03/23/2020",
+        "permitNumber": "Q00256961-I1",
+        "type": "Alteration",
+        "status": "Approved",
+        "latestActionDate": "05/05/2020",
+        "workType": "Not Found",
+        "initialCost": 4000,
+        "description": "General building renovation and interior alterations compliance update.",
+        "applicant": "Mohammad Shahid",
+        "filingStatus": "Standard Plan Exam"
+      },
+      {
+        "date": "07/15/2019",
+        "permitNumber": "421742537-01",
+        "type": "Alteration Type 2",
+        "status": "Permit Issued - Entire Job/Work",
+        "latestActionDate": "08/21/2019",
+        "workType": "Not Found",
+        "initialCost": 17000,
+        "description": "Mechanical system upgrades and architectural fixture placement.",
+        "applicant": "Jose Vasquez",
+        "filingStatus": "Approved"
+      },
+      {
+        "date": "02/09/2018",
+        "permitNumber": "421567352-01",
+        "type": "Alteration Type 2",
+        "status": "Permit Issued - Entire Job/Work",
+        "latestActionDate": "04/26/2018",
+        "workType": "Plumbing",
+        "initialCost": 67000,
+        "description": "Plumbing pipe overhaul, backflow preventer setup, and water supply upgrades.",
+        "applicant": "Aido Escurra",
+        "filingStatus": "Approved"
+      },
+      {
+        "date": "1990 permit",
+        "permitNumber": "Not Found",
+        "type": "Not Found",
+        "status": "Not Found",
+        "latestActionDate": "Not Found",
+        "workType": "Not Found",
+        "initialCost": "Not Found"
+      }
+    ],
+    "complaints311": [
+      {
+        "date": "10/14/2023",
+        "agency": "DOB",
+        "complaintType": "Building Condition",
+        "descriptor": "Construction Work Without Permit",
+        "address": "42-07 12th St",
+        "status": "Closed",
+        "resolution": "Inspector found no violation at time of inspection.",
+        "closedDate": "10/18/2023"
+      },
+      {
+        "date": "05/02/2022",
+        "agency": "DEP",
+        "complaintType": "Noise",
+        "descriptor": "HVAC Equipment Noise",
+        "address": "42-07 12th St",
+        "status": "Closed",
+        "resolution": "Owner mitigated acoustic levels within threshold.",
+        "closedDate": "05/09/2022"
+      },
+      {
+        "date": "01/19/2021",
+        "agency": "DOB",
+        "complaintType": "Plumbing",
+        "descriptor": "Unpermitted Piping Test",
+        "address": "42-07 12th St",
+        "status": "Closed",
+        "resolution": "Permit filing verified on site.",
+        "closedDate": "01/25/2021"
+      }
+    ],
+    "contacts": {
+      "registeredOwner": {
+        "name": "JORICH, LLC",
+        "source": "Assessment Roll"
+      },
+      "permitContacts": [
+        {
+          "name": "Mohammad Shahid",
+          "company": "City Vendors Wholesale LLC",
+          "address": "42-12 13 Street",
+          "phone": "(917) 497-2200"
+        },
+        {
+          "name": "Jose Vasquez",
+          "company": "J5 Empire Corp",
+          "address": "Not Found",
+          "phone": "(718) 785-0091"
+        },
+        {
+          "name": "Sung-Ho Shin",
+          "company": "Not Found",
+          "address": "Not Found",
+          "phone": "(917) 497-2200"
+        },
+        {
+          "name": "Aido Escurra",
+          "company": "Infiniti Ecl Plumbing Corp",
+          "address": "Not Found",
+          "phone": "(929) 600-5504"
+        },
+        {
+          "name": "Salim Rahman",
+          "company": "T&S Home Improvement Inc.",
+          "address": "Not Found",
+          "phone": "Not Found"
+        }
+      ]
+    },
+    "financials": {
+      "mortgageSummary": "No active mortgages tied to this property.",
+      "mortgageNote": "Not verified from the currently available public API data.",
+      "incomeExpenses": "Individual RPIE income/expense data is not currently available in the connected dataset."
+    },
+    "documents": {
+      "deedSummary": {
+        "documentType": "DEED",
+        "documentId": "2017110801341001",
+        "documentDate": "10/26/2017",
+        "recordedDate": "11/14/2017",
+        "amount": 1,
+        "party1": "NEW YORK CITY INDUSTRIAL DEVELOPMENT AGENCY",
+        "party2": "JORICH, LLC"
+      },
+      "liens": "Not Found",
+      "acrisDocuments": [
+        {
+          "documentId": "2017110801341001",
+          "documentType": "DEED",
+          "date": "10/26/2017",
+          "amount": 1,
+          "party1": "NYC INDUSTRIAL DEV AGENCY",
+          "party2": "JORICH, LLC"
+        },
+        {
+          "documentId": "2017110801341002",
+          "documentType": "AGREEMENT",
+          "date": "10/26/2017",
+          "amount": 0,
+          "party1": "JORICH, LLC",
+          "party2": "CITY VENDORS WHOLESALE LLC"
+        }
+      ]
+    }
+  },
+  {
+    "bbl": "1008350001",
+    "bin": "1015862",
+    "address": "350 5th Ave",
+    "publicRecordAddress": "350 5 AVENUE",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10118",
+    "borough": "Manhattan",
+    "owner": "ESRT EMPIRE STATE BUILDING, L.L.C.",
+    "propertyType": "Commercial Office Tower",
+    "yearBuilt": 1931,
+    "stories": 102,
+    "units": 240,
+    "lotAreaSqFt": 91351,
+    "buildingAreaSqFt": 2772000,
+    "commercialAreaSqFt": 2772000,
+    "factoryAreaSqFt": 0,
+    "zoning": "C5-3",
+    "specialDistrict": "MiD",
+    "zoningMap": "8d",
+    "far": {
+      "current": 30.3,
+      "commercial": 15,
+      "facility": 15,
+      "maxBuildableSqFt": 1370265,
+      "remainingBuildableSqFt": 0
+    },
+    "development": {
+      "mihArea": "Not Found",
+      "eDesignation": "None",
+      "eDesignationDetails": null,
+      "frontage": "197 ft",
+      "nearestWideStreet": "5th Ave",
+      "distanceToWideStreet": "0 ft",
+      "rezoningProjects": "Midtown East Rezoning",
+      "planimetricMap": "Verified"
+    },
+    "lastSale": {
+      "purchaseDate": "10/07/2013",
+      "purchasePrice": 1890000000,
+      "documentType": "DEED",
+      "documentId": "2013101500891001",
+      "recordedDate": "10/18/2013",
+      "party1": "EMPIRE STATE BUILDING ASSOCIATES L.L.C.",
+      "party2": "ESRT EMPIRE STATE BUILDING, L.L.C.",
+      "armsLength": "Verified",
+      "transactionType": "Arm's Length Transfer"
+    },
+    "assessmentHistory": [
+      { "year": "2025/26", "marketValue": 685000000, "assessedValue": 308250000, "taxableValue": 308250000, "taxClass": "4" },
+      { "year": "2024/25", "marketValue": 650000000, "assessedValue": 292500000, "taxableValue": 292500000, "taxClass": "4" }
+    ],
+    "taxInfo": {
+      "taxClass": "4",
+      "marketValue": 685000000,
+      "assessedValue": 308250000,
+      "taxableValue": 308250000,
+      "rates": [
+        { "year": "2024/25", "rate": "10.762%" },
+        { "year": "2023/24", "rate": "10.592%" }
+      ]
+    },
+    "permits": [],
+    "complaints311": [],
+    "contacts": {
+      "registeredOwner": {
+        "name": "ESRT EMPIRE STATE BUILDING, L.L.C.",
+        "source": "Assessment Roll"
+      },
+      "permitContacts": []
+    },
+    "financials": {
+      "mortgageSummary": "No active mortgages tied to this property.",
+      "mortgageNote": "Not verified from the currently available public API data.",
+      "incomeExpenses": "Individual RPIE income/expense data is not currently available in the connected dataset."
+    },
+    "documents": {
+      "deedSummary": {
+        "documentType": "DEED",
+        "documentId": "2013101500891001",
+        "documentDate": "10/07/2013",
+        "recordedDate": "10/18/2013",
+        "amount": 1890000000,
+        "party1": "EMPIRE STATE BUILDING ASSOCIATES L.L.C.",
+        "party2": "ESRT EMPIRE STATE BUILDING, L.L.C."
+      },
+      "liens": "Not Found",
+      "acrisDocuments": []
+    }
+  },
+  {
+    "bbl": "1000230001",
+    "bin": "1000045",
+    "address": "1 Wall St",
+    "publicRecordAddress": "1 WALL STREET",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10005",
+    "borough": "Manhattan",
+    "owner": "MACKLOWE PROPERTIES",
+    "propertyType": "Mixed-Use Residential/Retail",
+    "yearBuilt": 1931,
+    "stories": 50,
+    "units": 566,
+    "lotAreaSqFt": 44000,
+    "buildingAreaSqFt": 1165000,
+    "commercialAreaSqFt": 250000,
+    "factoryAreaSqFt": 0,
+    "zoning": "C5-5",
+    "specialDistrict": "LM",
+    "zoningMap": "12b",
+    "far": {
+      "current": 26.4,
+      "commercial": 15,
+      "facility": 15,
+      "maxBuildableSqFt": 660000,
+      "remainingBuildableSqFt": 0
+    },
+    "development": {
+      "mihArea": "Not Found",
+      "eDesignation": "None",
+      "eDesignationDetails": null,
+      "frontage": "178 ft",
+      "nearestWideStreet": "Broadway",
+      "distanceToWideStreet": "0 ft",
+      "rezoningProjects": "Lower Manhattan Zoning",
+      "planimetricMap": "Verified"
+    },
+    "lastSale": {
+      "purchaseDate": "05/22/2014",
+      "purchasePrice": 585000000,
+      "documentType": "DEED",
+      "documentId": "2014052900420001",
+      "recordedDate": "06/02/2014",
+      "party1": "BNY MELLON",
+      "party2": "MACKLOWE PROPERTIES",
+      "armsLength": "Verified",
+      "transactionType": "Arm's Length Transfer"
+    },
+    "assessmentHistory": [
+      { "year": "2025/26", "marketValue": 420000000, "assessedValue": 189000000, "taxableValue": 189000000, "taxClass": "2" }
+    ],
+    "taxInfo": {
+      "taxClass": "2",
+      "marketValue": 420000000,
+      "assessedValue": 189000000,
+      "taxableValue": 189000000,
+      "rates": [
+        { "year": "2024/25", "rate": "12.502%" }
+      ]
+    },
+    "permits": [],
+    "complaints311": [],
+    "contacts": {
+      "registeredOwner": {
+        "name": "MACKLOWE PROPERTIES",
+        "source": "Assessment Roll"
+      },
+      "permitContacts": []
+    },
+    "financials": {
+      "mortgageSummary": "No active mortgages tied to this property.",
+      "mortgageNote": "Not verified from the currently available public API data.",
+      "incomeExpenses": "Individual RPIE income/expense data is not currently available in the connected dataset."
+    },
+    "documents": {
+      "deedSummary": {
+        "documentType": "DEED",
+        "documentId": "2014052900420001",
+        "documentDate": "05/22/2014",
+        "recordedDate": "06/02/2014",
+        "amount": 585000000,
+        "party1": "BNY MELLON",
+        "party2": "MACKLOWE PROPERTIES"
+      },
+      "liens": "Not Found",
+      "acrisDocuments": []
+    }
+  }
+]
