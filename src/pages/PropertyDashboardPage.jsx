@@ -93,15 +93,15 @@ export const PropertyDashboardPage = () => {
   };
 
   const tabsConfig = [
-    { id: 'overview', label: 'Overview', icon: Building2 },
-    { id: 'valuation', label: 'Valuation', icon: DollarSign },
-    { id: 'tax', label: 'Tax', icon: Percent },
-    { id: 'permits', label: 'Permits', icon: HardHat },
-    { id: 'violations', label: 'Violations', icon: ShieldAlert },
-    { id: 'contacts', label: 'Contacts', icon: Contact },
-    { id: 'financials', label: 'Financials', icon: Landmark },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'development', label: 'Development', icon: Layers },
+    { id: 'overview', label: 'General' },
+    { id: 'contacts', label: 'Contacts' },
+    { id: 'valuation', label: 'Valuation' },
+    { id: 'documents', label: 'Documents' },
+    { id: 'financials', label: 'Financials' },
+    { id: 'tax', label: 'Tax' },
+    { id: 'permits', label: 'Permits' },
+    { id: 'development', label: 'Development' },
+    { id: 'violations', label: 'Violations' },
   ];
 
   if (loading) {
@@ -234,25 +234,23 @@ export const PropertyDashboardPage = () => {
         </div>
       </div>
 
-      {/* Sticky Tab Navigation Bar */}
-      <div className="sticky top-0 z-40 bg-white border-b border-[#E5E7EB] shadow-sm">
+      {/* Sticky Tab Navigation Bar (Pill Chips Design matching Screenshot 1) */}
+      <div className="sticky top-0 z-40 bg-[#F9FAFB] border-b border-[#E5E7EB] py-3 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-1">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
             {tabsConfig.map((t) => {
-              const Icon = t.icon;
               const isActive = activeTab === t.id;
               return (
                 <Link
                   key={t.id}
                   to={`/property/${bbl}/${t.id}`}
-                  className={`flex items-center gap-2 px-4 py-3.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border-b-2 cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? 'border-[#2563EB] text-[#2563EB] bg-blue-50/50'
-                      : 'border-transparent text-[#667085] hover:text-[#111827] hover:border-gray-300'
+                      ? 'bg-[#2563EB] text-white shadow-md shadow-blue-500/20 font-bold'
+                      : 'bg-[#F1F3F5] text-[#4B5563] hover:bg-[#E5E7EB] hover:text-[#111827]'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{t.label}</span>
+                  {t.label}
                 </Link>
               );
             })}

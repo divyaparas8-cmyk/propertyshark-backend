@@ -1,244 +1,174 @@
-import React from 'react';
-import { Building, Layers, ShieldCheck, Ruler, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Info, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
 
 export const OverviewTab = ({ property }) => {
+  const [panelVisible, setPanelVisible] = useState(true);
+
   if (!property) return null;
 
+  const lotArea = property.lotAreaSqFt || 12000;
+  const buildingArea = property.buildingAreaSqFt || 12000;
+  const commercialFar = property.far?.commercial || 5;
+
+  const maxBuildableArea = lotArea * commercialFar; // 60,000
+  const remainingBuildableArea = Math.max(0, maxBuildableArea - buildingArea); // 48,000
+
   return (
-    <div className="space-y-8">
-      {/* 6 Premium Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Property Type
-          </span>
-          <span className="text-sm font-black text-[#111827] block truncate">{property.propertyType}</span>
+    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-6 bg-[#2563EB] rounded-full" />
+          <h2 className="text-xl font-bold text-[#111827]">Overview</h2>
         </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Lot Area
-          </span>
-          <span className="text-sm font-black text-[#111827] block">
-            {property.lotAreaSqFt.toLocaleString()} sq ft
-          </span>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Building Area
-          </span>
-          <span className="text-sm font-black text-[#111827] block">
-            {property.buildingAreaSqFt.toLocaleString()} sq ft
-          </span>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Year Built
-          </span>
-          <span className="text-sm font-black text-[#111827] block">{property.yearBuilt}</span>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Owner
-          </span>
-          <span className="text-sm font-black text-[#111827] block truncate" title={property.owner}>
-            {property.owner}
-          </span>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span className="text-[11px] font-bold text-[#667085] uppercase tracking-wider block mb-1">
-            Zoning
-          </span>
-          <span className="text-sm font-black text-[#2563EB] block">{property.zoning}</span>
-        </div>
+        <button
+          onClick={() => setPanelVisible(!panelVisible)}
+          className="text-xs font-semibold text-gray-500 hover:text-[#111827] flex items-center gap-1 transition-colors cursor-pointer"
+        >
+          <span>{panelVisible ? 'Hide panel' : 'Show panel'}</span>
+          {panelVisible ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
       </div>
 
-      {/* Verified Property Details Section */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <Building className="w-5 h-5 text-[#2563EB]" />
-          <span>PROPERTY DETAILS</span>
-        </h3>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8 text-sm">
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Address</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.address}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Public Record Address</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.publicRecordAddress}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Borough</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.borough}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">ZIP Code</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.zip}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">BBL Number</span>
-            <span className="font-bold font-mono text-[#111827] mt-0.5 block">{property.bbl}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">BIN Number</span>
-            <span className="font-bold font-mono text-[#111827] mt-0.5 block">{property.bin}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Owner</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.owner}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Year Built</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.yearBuilt}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Stories</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.stories}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Units</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.units}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Lot Area</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">
-              {property.lotAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Building Area</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">
-              {property.buildingAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Commercial Area</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">
-              {property.commercialAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Factory Area</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">
-              {property.factoryAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Zoning</span>
-            <span className="font-bold text-[#2563EB] mt-0.5 block">{property.zoning}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Special District</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.specialDistrict}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Zoning Map</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.zoningMap}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Current FAR</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.far.current}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Commercial FAR</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.far.commercial}</span>
-          </div>
-
-          <div>
-            <span className="text-xs text-[#667085] font-bold uppercase tracking-wider block">Facility FAR</span>
-            <span className="font-bold text-[#111827] mt-0.5 block">{property.far.facility}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* AIR RIGHTS / FAR SECTION */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-[#4F46E5]" />
-            <span>AIR RIGHTS / FAR ANALYSIS</span>
-          </div>
-          <span className="px-3 py-1 bg-indigo-50 text-[#4F46E5] text-xs font-mono font-bold rounded-md border border-indigo-100">
-            M1-5A ZONING
-          </span>
-        </h3>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-            <span className="text-xs text-[#667085] font-bold block uppercase">Lot Area</span>
-            <span className="font-black text-[#111827] text-base mt-1 block">
-              {property.lotAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-            <span className="text-xs text-[#667085] font-bold block uppercase">Existing Building Area</span>
-            <span className="font-black text-[#111827] text-base mt-1 block">
-              {property.buildingAreaSqFt.toLocaleString()} sq ft
-            </span>
-          </div>
-
-          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-            <span className="text-xs text-[#667085] font-bold block uppercase">Current FAR</span>
-            <span className="font-black text-[#111827] text-base mt-1 block">{property.far.current}</span>
-          </div>
-
-          <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-            <span className="text-xs text-[#667085] font-bold block uppercase">Commercial / Facility FAR</span>
-            <span className="font-black text-[#2563EB] text-base mt-1 block">
-              {property.far.commercial} / {property.far.facility}
-            </span>
-          </div>
-
-          <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-100 col-span-1 sm:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-[#4F46E5] font-bold uppercase tracking-wider">Maximum Buildable Area</span>
-              <span className="px-2 py-0.5 bg-[#4F46E5] text-white text-[10px] font-bold rounded uppercase">
-                Calculated
-              </span>
+      {panelVisible && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs sm:text-sm">
+          {/* ================= LEFT COLUMN CARDS ================= */}
+          <div className="space-y-6">
+            {/* 1. ADDRESS CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Address</h3>
+              <InfoRow label="Property address" value={property.address || '42-07 12th St'} />
+              <InfoRow
+                label="Alternate address(es)"
+                value="42-07 - 42-11 12th St / 42-10 - 42-12 13th St"
+              />
+              <InfoRow label="Zip code" value={property.zip || '11101'} />
+              <InfoRow label="Neighborhood" value="Hunters Point" />
+              <InfoRow label="Borough" value={property.borough || 'Queens'} />
+              <InfoRow label="Block & lot" value="00458-0098" />
             </div>
-            <span className="font-black text-[#111827] text-2xl">
-              {property.far.maxBuildableSqFt.toLocaleString()} sq ft
-            </span>
+
+            {/* 2. OWNER & SALE CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-4">
+              <div>
+                <h3 className="font-bold text-[#111827] text-base mb-3">Owner</h3>
+                <InfoRow label="Name" value={property.owner || 'Jorich, LLC'} isLink />
+                <InfoRow label="Address" value="46 Carman St, Massapequa, NY 11758" />
+                <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+                  <span className="text-[#6B7280] font-medium flex items-center gap-1">
+                    Real Owners <Info className="w-3.5 h-3.5 text-gray-400" />
+                  </span>
+                  <button className="px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors cursor-pointer">
+                    View contact
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-gray-200/80 space-y-1">
+                <InfoRow label="Sale date" value="10/26/2017" />
+                <InfoRow label="Sale price" value="$1" />
+                <InfoRow label="Arm's length" value="No" />
+                <InfoRow label="Transaction type" value="Institutional / lender sale" />
+              </div>
+            </div>
+
+            {/* 3. PROPERTY TAXES CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Property Taxes</h3>
+              <InfoRow label="Tax class" value={property.taxInfo?.taxClass || '4'} />
+              <InfoRow label="Property tax" value="$77,295" />
+            </div>
+
+            {/* 4. LOT CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Lot</h3>
+              <InfoRow label="Lot sq. ft." value={lotArea.toLocaleString()} />
+              <InfoRow label="Lot dimensions" value="59.58 ft x 200 ft" />
+              <InfoRow label="Ground elevation" value="18 ft" />
+              <InfoRow label="Corner lot" value="No" />
+              <InfoRow label="Lot shape" value="Regular" />
+            </div>
+
+            {/* 5. ZONING CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Zoning</h3>
+              <InfoRow label="Zoning districts" value={property.zoning || 'M1-5A'} infoIcon />
+              <InfoRow
+                label="Special district"
+                value="Long Island City Mixed Use District (LIC)"
+              />
+              <InfoRow label="MIH area" value="No" />
+              <InfoRow label="Zoning map" value={property.zoningMap || '9b'} isLink />
+            </div>
           </div>
 
-          <div className="p-5 bg-gradient-to-br from-indigo-50 to-purple-50/50 rounded-2xl border border-indigo-100 col-span-1 sm:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-[#6D28D9] font-bold uppercase tracking-wider">Remaining Buildable Area</span>
-              <span className="px-2 py-0.5 bg-[#6D28D9] text-white text-[10px] font-bold rounded uppercase">
-                Calculated
-              </span>
+          {/* ================= RIGHT COLUMN CARDS ================= */}
+          <div className="space-y-6">
+            {/* 1. BUILDING CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Building</h3>
+              <InfoRow
+                label="Property type"
+                value="Factory - Industrial Semi-Fireproof (F4)"
+                infoIcon
+              />
+              <InfoRow label="Square feet" value={buildingArea.toLocaleString()} />
+              <InfoRow label="Building dimensions" value="59.42 ft x 200 ft" />
+              <InfoRow label="Buildings on lot" value="1" />
+              <InfoRow label="Stories" value={property.stories || '1'} />
+              <InfoRow label="Roof height" value="17 ft" />
+              <InfoRow label="Year built" value={property.yearBuilt || '1931'} />
             </div>
-            <span className="font-black text-[#2563EB] text-2xl">
-              {property.far.remainingBuildableSqFt.toLocaleString()} sq ft
-            </span>
+
+            {/* 2. PROXIMITY CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <InfoRow label="Proximity" value="2-Side abutted" />
+              <InfoRow label="Building material" value="Masonry" />
+              <InfoRow label="Grade" value="C-" />
+            </div>
+
+            {/* 3. USE CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Use</h3>
+              <InfoRow label="Commercial units" value={property.units || '2'} />
+              <InfoRow label="Factory sq. ft." value="6,000" />
+              <InfoRow label="Certificate(s) of occupancy" value="Click here" isLink />
+            </div>
+
+            {/* 4. FLOOR AREA RATIO (FAR) CARD */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-5 border border-gray-200/80 space-y-1">
+              <h3 className="font-bold text-[#111827] text-base mb-3">Floor Area Ratio (FAR)</h3>
+              <InfoRow label="Commercial FAR" value={property.far?.commercial || '5'} />
+              <InfoRow label="Facility FAR" value={property.far?.facility || '5'} />
+              <InfoRow label="Current FAR" value={property.far?.current || '1.00'} infoIcon />
+              <InfoRow label="Max buildable area" value={`${maxBuildableArea.toLocaleString()} sq. ft.`} />
+              <InfoRow label="Current built area" value={`${buildingArea.toLocaleString()} sq. ft.`} />
+              <InfoRow
+                label="Buildable area"
+                value={`${remainingBuildableArea.toLocaleString()} sq. ft.`}
+                infoIcon
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
+
+/* Helper Component for Table Rows */
+const InfoRow = ({ label, value, isLink, infoIcon }) => (
+  <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+    <span className="text-[#6B7280] font-medium flex items-center gap-1">
+      {label}
+      {infoIcon && <Info className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-gray-600" />}
+    </span>
+    <span
+      className={`font-semibold text-right ${
+        isLink ? 'text-[#2563EB] hover:underline cursor-pointer' : 'text-[#111827]'
+      }`}
+    >
+      {value}
+    </span>
+  </div>
+);

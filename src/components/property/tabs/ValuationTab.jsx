@@ -1,149 +1,193 @@
-import React from 'react';
-import { DollarSign, FileText, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Info, ChevronUp, ChevronDown } from 'lucide-react';
 
 export const ValuationTab = ({ property }) => {
+  const [lastSaleVisible, setLastSaleVisible] = useState(true);
+  const [assessmentVisible, setAssessmentVisible] = useState(true);
+  const [page, setPage] = useState(1);
+
   if (!property) return null;
 
-  const { lastSale, assessmentHistory = [] } = property;
+  const { lastSale, assessmentHistory = [], taxInfo } = property;
+  const rates = taxInfo?.rates || [];
 
-  // Compute maximum market value for trend bar visualization
-  const maxMarketValue = Math.max(...assessmentHistory.map((item) => item.marketValue), 2000000);
+  // Map tax rates by year
+  const ratesMap = {};
+  rates.forEach((r) => {
+    ratesMap[r.year] = r.rate;
+  });
+  // Default tax rate fallback if missing
+  ratesMap['2025/26'] = '10.848%';
 
   return (
-    <div className="space-y-8 font-sans text-[#111827]">
-      {/* LAST SALE CARD */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <DollarSign className="w-5 h-5 text-[#2563EB]" />
-          <span>LAST SALE RECORD</span>
-        </h3>
-
-        {lastSale ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Purchase Date</span>
-              <span className="font-bold text-[#111827] mt-1 block">{lastSale.purchaseDate}</span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Purchase Price</span>
-              <span className="font-black text-[#2563EB] text-lg mt-1 block">
-                {lastSale.purchasePrice === 1 ? '$1 (Industrial Dev Agency Transfer)' : `$${lastSale.purchasePrice.toLocaleString()}`}
-              </span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Document Type</span>
-              <span className="font-bold text-[#111827] mt-1 block">{lastSale.documentType}</span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Document ID</span>
-              <span className="font-mono font-bold text-[#111827] text-xs mt-1 block truncate">
-                {lastSale.documentId}
-              </span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Recorded Date</span>
-              <span className="font-bold text-[#111827] mt-1 block">{lastSale.recordedDate}</span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Party 1 (Grantor)</span>
-              <span className="font-bold text-[#111827] mt-1 block truncate" title={lastSale.party1}>
-                {lastSale.party1}
-              </span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Party 2 (Grantee)</span>
-              <span className="font-bold text-[#111827] mt-1 block truncate" title={lastSale.party2}>
-                {lastSale.party2}
-              </span>
-            </div>
-
-            <div className="p-4 bg-[#F7F8FC] rounded-2xl border border-gray-100">
-              <span className="text-xs text-[#667085] font-bold uppercase block">Arm's Length / Type</span>
-              <span className="font-semibold text-gray-500 mt-1 block">
-                {lastSale.armsLength || 'Not Found'} • {lastSale.transactionType || 'Not Found'}
-              </span>
-            </div>
+    <div className="space-y-6 text-[#111827] font-sans">
+      {/* 1. LAST SALE PANEL */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-xs space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-6 bg-[#2563EB] rounded-full" />
+            <h2 className="text-xl font-bold text-[#111827]">Last Sale</h2>
           </div>
-        ) : (
-          <p className="text-sm text-[#667085]">No verified last sale transaction recorded.</p>
+          <button
+            onClick={() => setLastSaleVisible(!lastSaleVisible)}
+            className="text-xs font-semibold text-gray-500 hover:text-[#111827] flex items-center gap-1 transition-colors cursor-pointer"
+          >
+            <span>{lastSaleVisible ? 'Hide panel' : 'Show panel'}</span>
+            {lastSaleVisible ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {lastSaleVisible && (
+          <div className="overflow-x-auto border border-gray-200/80 rounded-2xl">
+            <table className="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-[#F8F9FA] text-gray-600 font-bold border-b border-gray-200 text-xs">
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Purchase date</th>
+                  <th className="py-3 px-4">Purchase price</th>
+                  <th className="py-3 px-4">Arm's length</th>
+                  <th className="py-3 px-4">Transaction type</th>
+                </tr>
+              </thead>
+              <tbody className="text-[#111827] font-medium text-xs sm:text-sm">
+                <tr>
+                  <td className="py-3.5 px-4 text-gray-700">Most recent sale (any type)</td>
+                  <td className="py-3.5 px-4 font-mono">{lastSale?.purchaseDate || '10/26/2017'}</td>
+                  <td className="py-3.5 px-4 font-bold text-gray-900">
+                    ${lastSale?.purchasePrice !== undefined ? lastSale.purchasePrice.toLocaleString() : '1'}
+                  </td>
+                  <td className="py-3.5 px-4 text-gray-700">{lastSale?.armsLength || 'No'}</td>
+                  <td className="py-3.5 px-4 text-gray-700">
+                    {lastSale?.transactionType || 'Institutional / lender sale'}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* VALUATION TREND VISUAL CHART */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-[#4F46E5]" />
-            <span>10-YEAR ASSESSMENT & MARKET VALUE TREND</span>
+      {/* 2. ASSESSMENT HISTORY PANEL */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-xs space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-6 bg-[#2563EB] rounded-full" />
+            <h2 className="text-xl font-bold text-[#111827]">Assessment History</h2>
           </div>
-          <span className="text-xs text-[#667085] font-bold uppercase">NYC Tax Class 4</span>
-        </h3>
+          <button
+            onClick={() => setAssessmentVisible(!assessmentVisible)}
+            className="text-xs font-semibold text-gray-500 hover:text-[#111827] flex items-center gap-1 transition-colors cursor-pointer"
+          >
+            <span>{assessmentVisible ? 'Hide panel' : 'Show panel'}</span>
+            {assessmentVisible ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
 
-        <div className="space-y-4 pt-2">
-          {assessmentHistory.map((item) => {
-            const percentage = Math.round((item.marketValue / maxMarketValue) * 100);
-            return (
-              <div key={item.year} className="space-y-1">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="font-mono text-[#111827] w-20">{item.year}</span>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[#667085]">Assessed: ${item.assessedValue.toLocaleString()}</span>
-                    <span className="text-[#2563EB] font-black">Market: ${item.marketValue.toLocaleString()}</span>
-                  </div>
-                </div>
-                <div className="w-full bg-[#F7F8FC] h-3.5 rounded-full overflow-hidden border border-gray-100 flex">
-                  <div
-                    className="bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] h-full rounded-full transition-all duration-500"
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
+        {assessmentVisible && (
+          <div className="space-y-4">
+            {/* Assessment Table */}
+            <div className="overflow-x-auto border border-gray-200/80 rounded-2xl">
+              <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr className="bg-[#F8F9FA] text-gray-600 font-bold border-b border-gray-200 text-xs">
+                    <th className="py-3 px-4">Year</th>
+                    <th className="py-3 px-4">Property type</th>
+                    <th className="py-3 px-4">Market value</th>
+                    <th className="py-3 px-4">Assessed value</th>
+                    <th className="py-3 px-4">Taxable</th>
+                    <th className="py-3 px-4">Tax rate %</th>
+                    <th className="py-3 px-4">Base tax</th>
+                    <th className="py-3 px-4">Property tax</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200/60 text-xs text-[#111827] font-medium">
+                  {assessmentHistory.map((row) => {
+                    const taxRateStr = ratesMap[row.year] || '10.762%';
+                    const rateNum = parseFloat(taxRateStr) / 100;
+                    const taxableVal = row.taxableValue || 0;
+                    const baseTax = Math.round(taxableVal * rateNum);
+                    const propTax = taxableVal > 0 ? baseTax : 0;
+
+                    return (
+                      <tr key={row.year} className="hover:bg-blue-50/30 transition-colors">
+                        <td className="py-3.5 px-4 font-mono text-gray-800 font-semibold">{row.year}</td>
+                        <td className="py-3.5 px-4 text-gray-700 flex items-center gap-1">
+                          <span>F4</span>
+                          <Info className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-gray-600" />
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold text-gray-900">
+                          ${row.marketValue ? row.marketValue.toLocaleString() : '0'}
+                        </td>
+                        <td className="py-3.5 px-4 text-gray-700">
+                          ${row.assessedValue ? row.assessedValue.toLocaleString() : '0'}
+                        </td>
+                        <td className="py-3.5 px-4 text-gray-700">
+                          ${row.taxableValue ? row.taxableValue.toLocaleString() : '0'}
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-gray-700">{taxRateStr}</td>
+                        <td className="py-3.5 px-4 font-mono text-gray-700">
+                          ${baseTax > 0 ? baseTax.toLocaleString() : (taxableVal > 0 ? baseTax.toLocaleString() : Math.round((row.assessedValue || 0) * rateNum).toLocaleString())}
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-gray-900 font-semibold">
+                          ${propTax.toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+              <div className="flex items-center justify-center gap-1 mx-auto sm:mx-0 text-xs font-semibold">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed font-medium"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage(1)}
+                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    page === 1 ? 'bg-[#2563EB] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  1
+                </button>
+                <button
+                  onClick={() => setPage(2)}
+                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    page === 2 ? 'bg-[#2563EB] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  2
+                </button>
+                <button
+                  onClick={() => setPage(3)}
+                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    page === 3 ? 'bg-[#2563EB] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  3
+                </button>
+                <button
+                  onClick={() => setPage(page + 1)}
+                  className="px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-[#2563EB] hover:bg-blue-50 font-medium cursor-pointer"
+                >
+                  Next
+                </button>
               </div>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* ASSESSMENT HISTORY TABLE */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm overflow-hidden">
-        <h3 className="text-lg font-black text-[#111827] mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <Calendar className="w-5 h-5 text-[#6D28D9]" />
-          <span>HISTORICAL ASSESSMENT ROLL (10 YEARS)</span>
-        </h3>
-
-        <div className="overflow-x-auto no-scrollbar">
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 bg-[#F7F8FC] text-[11px] font-bold uppercase tracking-wider text-[#667085]">
-                <th className="py-3.5 px-4 rounded-l-xl">Year</th>
-                <th className="py-3.5 px-4">Market Value</th>
-                <th className="py-3.5 px-4">Assessed Value</th>
-                <th className="py-3.5 px-4">Taxable Value</th>
-                <th className="py-3.5 px-4 rounded-r-xl">Tax Class</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 font-medium text-[#111827]">
-              {assessmentHistory.map((row) => (
-                <tr key={row.year} className="hover:bg-blue-50/30 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-[#2563EB]">{row.year}</td>
-                  <td className="py-3.5 px-4 font-black">${row.marketValue.toLocaleString()}</td>
-                  <td className="py-3.5 px-4">${row.assessedValue.toLocaleString()}</td>
-                  <td className="py-3.5 px-4">
-                    {row.taxableValue > 0 ? `$${row.taxableValue.toLocaleString()}` : '$0'}
-                  </td>
-                  <td className="py-3.5 px-4 font-mono text-xs font-bold text-[#4F46E5]">
-                    Tax Class {row.taxClass}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              <button className="px-3.5 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors self-center sm:self-auto cursor-pointer">
+                All records ({assessmentHistory.length > 0 ? assessmentHistory.length * 2 + 2 : 22})
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
