@@ -16,7 +16,7 @@ export const env = {
   NYC_OPEN_DATA: {
     BASE_URL: process.env.NYC_OPEN_DATA_BASE_URL || 'https://data.cityofnewyork.us',
     PLUTO: process.env.NYC_PLUTO_DATASET || '64uk-42ks',
-    ASSESSMENT: process.env.NYC_ASSESSMENT_DATASET || '8y4t-faws',
+    ASSESSMENT: process.env.NYC_ASSESSMENT_DATASET || 'yjxr-fw8i',
     TAX_RATES: process.env.NYC_TAX_RATE_DATASET || '7zb8-7bpk',
     PERMITS: process.env.NYC_PERMITS_DATASET || 'ic3t-wcy2',
     DOB_FILING: process.env.NYC_DOB_FILING_DATASET || 'w9ak-ipjd',

@@ -69,6 +69,40 @@ export const propertyService = {
     return [];
   },
 
+  resolveBin: async (address, borough, bbl) => {
+    const searchTerms = [];
+    if (address) {
+      const boroName = borough || 'New York';
+      searchTerms.push(`${address}, ${boroName}, NY`);
+      searchTerms.push(address);
+    }
+    if (bbl) {
+      searchTerms.push(String(bbl));
+    }
+
+    for (const term of searchTerms) {
+      try {
+        const geoUrl = `${env.NYC_GEOSEARCH_BASE_URL}/search?text=${encodeURIComponent(term)}`;
+        const response = await fetch(geoUrl, { headers: { Accept: 'application/json' } });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            for (const f of data.features) {
+              const props = f.properties || {};
+              const bin = props.addendum?.pad?.bin || props.pad_bin || props.bin;
+              if (bin && String(bin).trim() && String(bin).trim() !== '0') {
+                return String(bin).trim();
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // continue
+      }
+    }
+    return '';
+  },
+
   resolveProperty: async (input) => {
     let queryText = typeof input === 'string' ? input : input.bbl || input.address || input.text || '';
     let bbl = typeof input === 'object' ? input.bbl : queryText.match(/^\d{10}$/) ? queryText : '';
@@ -79,6 +113,10 @@ export const propertyService = {
     if (bbl) {
       const pluto = await nycOpenDataService.getPlutoByBBL(bbl);
       if (pluto) {
+        let resolvedBin = String(pluto.bin || bin || '');
+        if (!resolvedBin || resolvedBin === '0') {
+          resolvedBin = await propertyService.resolveBin(pluto.address, pluto.borough, bbl);
+        }
         return {
           address: pluto.address || address || '',
           city: pluto.city || 'New York',
@@ -86,7 +124,7 @@ export const propertyService = {
           zip: pluto.zipcode || '',
           borough: pluto.borough || '',
           bbl: String(pluto.bbl || bbl),
-          bin: String(pluto.bin || bin || ''),
+          bin: resolvedBin,
           latitude: String(pluto.latitude || ''),
           longitude: String(pluto.longitude || ''),
         };
@@ -105,7 +143,7 @@ export const propertyService = {
             const props = f.properties || {};
             const coords = f.geometry?.coordinates || [];
             const resolvedBbl = props.pad_bbl || props.bbl || props.addendum?.pad?.bbl || bbl;
-            const resolvedBin = props.pad_bin || props.bin || props.addendum?.pad?.bin || bin;
+            const resolvedBin = props.addendum?.pad?.bin || props.pad_bin || props.bin || bin;
 
             if (resolvedBbl) {
               return {
@@ -132,6 +170,10 @@ export const propertyService = {
       const plutoResults = await nycOpenDataService.searchPluto(queryText);
       if (plutoResults && plutoResults.length > 0) {
         const p = plutoResults[0];
+        let resolvedBin = String(p.bin || '');
+        if (!resolvedBin || resolvedBin === '0') {
+          resolvedBin = await propertyService.resolveBin(p.address, p.borough, p.bbl);
+        }
         return {
           address: p.address || address,
           city: p.city || 'New York',
@@ -139,7 +181,7 @@ export const propertyService = {
           zip: p.zipcode || '',
           borough: p.borough || '',
           bbl: String(p.bbl),
-          bin: String(p.bin || ''),
+          bin: resolvedBin,
           latitude: String(p.latitude || ''),
           longitude: String(p.longitude || ''),
         };
@@ -158,22 +200,25 @@ export const propertyService = {
     return [];
   },
 
-  getPropertyByBBL: async (bbl) => {
+  getPropertyByBBL: async (inputBbl) => {
+    if (!inputBbl) return null;
+    const cleanBbl = String(inputBbl).trim().split('.')[0]; // 10-digit BBL (e.g. 4004580098)
+
     // 1. Fetch PLUTO dataset first
-    const pluto = await nycOpenDataService.getPlutoByBBL(bbl);
+    const pluto = await nycOpenDataService.getPlutoByBBL(cleanBbl);
 
     let baseInfo = null;
     if (pluto) {
       baseInfo = propertyService.transformPlutoToBaseInfo(pluto);
       if (!baseInfo.bin || baseInfo.bin === '0') {
-        const resolved = await propertyService.resolveProperty({ bbl });
-        if (resolved && resolved.bin) {
-          baseInfo.bin = resolved.bin;
+        const resolvedBin = await propertyService.resolveBin(baseInfo.address, baseInfo.borough, cleanBbl);
+        if (resolvedBin) {
+          baseInfo.bin = resolvedBin;
         }
       }
     } else {
       // Try resolving via GeoSearch / PAD for address & BIN if PLUTO is empty
-      const resolved = await propertyService.resolveProperty({ bbl });
+      const resolved = await propertyService.resolveProperty({ bbl: cleanBbl });
       if (resolved && resolved.bbl) {
         baseInfo = {
           bbl: resolved.bbl,
@@ -199,19 +244,23 @@ export const propertyService = {
       }
     }
 
-    // 2. Fetch parallel NYC datasets dynamically
-    const [assessmentRes, permitsRes, complaintsRes, acrisRes] = await Promise.all([
-      nycOpenDataService.getAssessmentRecords(bbl),
-      baseInfo.bin ? nycOpenDataService.getDobPermits(baseInfo.bin) : Promise.resolve({ data: [] }),
-      baseInfo.address ? nycOpenDataService.getComplaints311(baseInfo.address) : Promise.resolve({ data: [] }),
-      nycOpenDataService.getAcrisLegals(bbl),
+    // 2. Race for secondary datasets (6s timeout — permits are loaded lazily via /permits endpoint)
+    const timeoutFallback = (ms) => new Promise((resolve) => setTimeout(() => resolve({ data: [] }), ms));
+
+    const [assessmentRes, complaintsRes, acrisRes] = await Promise.all([
+      nycOpenDataService.getAssessmentRecords(cleanBbl).catch((err) => {
+        console.warn('[Assessment] Fetch error:', err.message);
+        return { data: [] };
+      }),
+      Promise.race([nycOpenDataService.getComplaints311(cleanBbl, baseInfo.address), timeoutFallback(6000)]).catch(() => ({ data: [] })),
+      Promise.race([nycOpenDataService.getAcrisLegals(cleanBbl), timeoutFallback(6000)]).catch(() => ({ data: [] })),
     ]);
 
     const assessmentHistory = assessmentService.formatAssessmentHistory(assessmentRes?.data || []);
     const taxInfo = taxService.formatTaxInfo(pluto, assessmentHistory);
-    const permits = permitService.formatPermits(permitsRes?.data || []);
+    const permits = []; // Loaded lazily via GET /properties/:bbl/permits
     const complaints311 = violationService.formatComplaints311(complaintsRes?.data || []);
-    const contacts = contactService.formatContacts(baseInfo.owner, permits);
+    const contacts = contactService.formatContacts(baseInfo.owner, permits, baseInfo.address, assessmentHistory);
     const documents = documentService.formatDocuments(acrisRes?.data || []);
     const zoningInfo = zoningService.getZoningDetails(pluto);
     const buildableCalculated = developmentService.calculateBuildable(pluto);
@@ -238,11 +287,15 @@ export const propertyService = {
       propertyType: baseInfo.propertyType,
       yearBuilt: baseInfo.yearBuilt ? Number(baseInfo.yearBuilt) : null,
       stories: baseInfo.stories ? Number(baseInfo.stories) : null,
+      numBuildings: baseInfo.numBuildings ? Number(baseInfo.numBuildings) : 1,
       units: baseInfo.units ? Number(baseInfo.units) : null,
+      commercialUnits: baseInfo.commercialUnits ? Number(baseInfo.commercialUnits) : null,
       lotAreaSqFt: Number(baseInfo.lotAreaSqFt || 0),
       buildingAreaSqFt: Number(baseInfo.buildingAreaSqFt || 0),
       commercialAreaSqFt: Number(baseInfo.commercialAreaSqFt || 0),
       factoryAreaSqFt: Number(baseInfo.factoryAreaSqFt || 0),
+      buildingDimensions: baseInfo.buildingDimensions,
+      lotDimensions: baseInfo.lotDimensions,
       zoning: zoningInfo.zoning,
       specialDistrict: zoningInfo.specialDistrict,
       zoningMap: zoningInfo.zoningMap,
@@ -285,6 +338,11 @@ export const propertyService = {
   },
 
   transformPlutoToBaseInfo: (p) => {
+    const bldgFront = Number(p.bldgfront || 0);
+    const bldgDepth = Number(p.bldgdepth || 0);
+    const lotFront = Number(p.lotfront || 0);
+    const lotDepth = Number(p.lotdepth || 0);
+
     return {
       bbl: String(p.bbl || ''),
       bin: String(p.bin || ''),
@@ -298,11 +356,15 @@ export const propertyService = {
       propertyType: p.bldgclass || null,
       yearBuilt: p.yearbuilt || null,
       stories: p.numfloors || null,
+      numBuildings: p.numbldgs || 1,
       units: p.unitstotal || null,
+      commercialUnits: p.unitscomm || null,
       lotAreaSqFt: p.lotarea || 0,
       buildingAreaSqFt: p.bldgarea || 0,
       commercialAreaSqFt: p.comarea || 0,
       factoryAreaSqFt: p.factryarea || 0,
+      buildingDimensions: bldgFront > 0 && bldgDepth > 0 ? `${bldgFront} ft x ${bldgDepth} ft` : 'Not available',
+      lotDimensions: lotFront > 0 && lotDepth > 0 ? `${lotFront} ft x ${lotDepth} ft` : 'Not available',
     };
   },
 };
