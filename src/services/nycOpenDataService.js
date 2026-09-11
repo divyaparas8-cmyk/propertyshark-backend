@@ -197,13 +197,55 @@ export const nycOpenDataService = {
    * Fetch ACRIS Title Deeds & Legal Documents
    */
   getAcrisLegals: async (bbl) => {
-    if (!bbl || bbl.length !== 10) return { status: 'unavailable', data: [] };
-    const boro = bbl[0];
-    const block = parseInt(bbl.slice(1, 6), 10);
-    const lot = parseInt(bbl.slice(6), 10);
+    const cleanBbl = String(bbl || '').trim().split('.')[0].replace(/[^0-9]/g, '');
+    if (!cleanBbl || cleanBbl.length !== 10) return { status: 'unavailable', data: [] };
+    const boro = cleanBbl[0];
+    const block = parseInt(cleanBbl.slice(1, 6), 10);
+    const lot = parseInt(cleanBbl.slice(6), 10);
     return nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.ACRIS_LEGALS, {
       $where: `borough = '${boro}' AND block = '${block}' AND lot = '${lot}'`,
-      $limit: 15,
+      $limit: 30,
     });
   },
+
+  /**
+   * Fetch Consolidated ACRIS Document Details (Legals + Master + Parties)
+   */
+  getFullAcrisDocuments: async (bbl) => {
+    const cleanBbl = String(bbl || '').trim().split('.')[0].replace(/[^0-9]/g, '');
+    if (!cleanBbl || cleanBbl.length !== 10) return { legals: [], master: [], parties: [] };
+    try {
+      const legalsRes = await nycOpenDataService.getAcrisLegals(cleanBbl);
+      const legalsData = legalsRes?.data || [];
+      const docIds = [...new Set(legalsData.map((d) => d.document_id).filter(Boolean))].slice(0, 15);
+
+      if (docIds.length === 0) {
+        return { legals: legalsData, master: [], parties: [] };
+      }
+
+      const docIdFilter = docIds.map((id) => `'${id}'`).join(',');
+
+      const [masterRes, partiesRes] = await Promise.all([
+        nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.ACRIS_MASTER, {
+          $where: `document_id in(${docIdFilter})`,
+          $limit: 50,
+        }).catch(() => ({ data: [] })),
+        nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.ACRIS_PARTIES, {
+          $where: `document_id in(${docIdFilter})`,
+          $limit: 80,
+        }).catch(() => ({ data: [] })),
+      ]);
+
+      return {
+        legals: legalsData,
+        master: masterRes?.data || [],
+        parties: partiesRes?.data || [],
+      };
+    } catch (err) {
+      console.warn('[ACRIS Full] Error fetching comprehensive documents:', err.message);
+      return { legals: [], master: [], parties: [] };
+    }
+  },
 };
+
+

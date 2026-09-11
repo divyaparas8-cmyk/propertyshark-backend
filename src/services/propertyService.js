@@ -253,7 +253,7 @@ export const propertyService = {
         return { data: [] };
       }),
       Promise.race([nycOpenDataService.getComplaints311(cleanBbl, baseInfo.address), timeoutFallback(6000)]).catch(() => ({ data: [] })),
-      Promise.race([nycOpenDataService.getAcrisLegals(cleanBbl), timeoutFallback(6000)]).catch(() => ({ data: [] })),
+      Promise.race([nycOpenDataService.getFullAcrisDocuments(cleanBbl), timeoutFallback(6000)]).catch(() => ({ legals: [], master: [], parties: [] })),
     ]);
 
     const assessmentHistory = assessmentService.formatAssessmentHistory(assessmentRes?.data || []);
@@ -261,7 +261,7 @@ export const propertyService = {
     const permits = []; // Loaded lazily via GET /properties/:bbl/permits
     const complaints311 = violationService.formatComplaints311(complaintsRes?.data || []);
     const contacts = contactService.formatContacts(baseInfo.owner, permits, baseInfo.address, assessmentHistory);
-    const documents = documentService.formatDocuments(acrisRes?.data || []);
+    const documents = documentService.formatDocuments(acrisRes, cleanBbl, baseInfo.address);
     const zoningInfo = zoningService.getZoningDetails(pluto);
     const buildableCalculated = developmentService.calculateBuildable(pluto);
 
