@@ -5,6 +5,8 @@ import { sendSuccess } from '../utils/response.js';
 
 const permitsCache = new Map();
 const inFlightPermits = new Map();
+const propertyCache = new Map();
+const inFlightProperties = new Map();
 
 export const propertyController = {
   autocomplete: async (req, res, next) => {
@@ -40,8 +42,37 @@ export const propertyController = {
   getByBBL: async (req, res, next) => {
     try {
       const { bbl } = req.params;
-      const property = await propertyService.getPropertyByBBL(bbl);
-      return sendSuccess(res, property, 'Property parcel record retrieved', 200);
+      const cleanBbl = String(bbl).trim().split('.')[0];
+      const cacheKey = cleanBbl;
+
+      // 1. Check in-memory property cache
+      if (propertyCache.has(cacheKey)) {
+        const cachedProperty = propertyCache.get(cacheKey);
+        return sendSuccess(res, cachedProperty, 'Property parcel record retrieved (cached)', 200);
+      }
+
+      // 2. Check if fetch is already in flight
+      if (inFlightProperties.has(cacheKey)) {
+        const property = await inFlightProperties.get(cacheKey);
+        return sendSuccess(res, property, 'Property parcel record retrieved', 200);
+      }
+
+      // 3. Start fetch and cache
+      const fetchPromise = (async () => {
+        const propertyData = await propertyService.getPropertyByBBL(cleanBbl);
+        if (propertyData && propertyData.bbl) {
+          propertyCache.set(cacheKey, propertyData);
+        }
+        return propertyData;
+      })();
+
+      inFlightProperties.set(cacheKey, fetchPromise);
+      try {
+        const property = await fetchPromise;
+        return sendSuccess(res, property, 'Property parcel record retrieved', 200);
+      } finally {
+        inFlightProperties.delete(cacheKey);
+      }
     } catch (error) {
       next(error);
     }

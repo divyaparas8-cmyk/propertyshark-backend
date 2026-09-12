@@ -6,7 +6,7 @@ const client = axios.create({
   timeout: 15000, // 15 seconds timeout
 });
 
-const PLUTO_FIELDS = 'bbl,address,zipcode,borough,ownername,bldgclass,yearbuilt,numfloors,numbldgs,unitstotal,unitsres,lotarea,bldgarea,comarea,factryarea,lotfront,lotdepth,bldgfront,bldgdepth,zonedist1,zonemap,commfar,facilfar,builtfar,residfar,assessland,assesstot';
+const PLUTO_FIELDS = 'bbl,address,zipcode,borough,ownername,bldgclass,yearbuilt,numfloors,numbldgs,unitstotal,unitsres,lotarea,bldgarea,comarea,factryarea,resarea,officearea,retailarea,garagearea,strgearea,otherarea,lotfront,lotdepth,bldgfront,bldgdepth,zonedist1,zonemap,commfar,facilfar,builtfar,residfar,assessland,assesstot,proxcode,lottype,irrlotcode,ext,yearalter1,yearalter2,latitude,longitude,cd,council,schooldist,firecomp,policeprct';
 
 export const nycOpenDataService = {
   /**
@@ -53,18 +53,46 @@ export const nycOpenDataService = {
       return res.status === 'success' ? res.data || [] : [];
     }
 
-    const q = query.trim().replace(/'/g, "''").toUpperCase();
+    let q = query.trim().replace(/'/g, "''").toUpperCase();
+    // Remove trailing country identifiers like USA, United States
+    q = q.replace(/,\s*(USA|UNITED STATES|US)$/i, '').trim();
+
     const isNum = /^\d+(\.\d+)?$/.test(q);
 
-    let whereClause = `address LIKE '%${q}%'`;
     if (isNum) {
       const formattedBbl = q.length === 10 ? `${q}.00000000` : q;
-      whereClause = `address LIKE '%${q}%' OR bbl = '${q}' OR bbl = '${formattedBbl}' OR zipcode = '${q}'`;
+      const whereClause = `bbl = '${q}' OR bbl = '${formattedBbl}' OR zipcode = '${q}' OR address LIKE '%${q}%'`;
+      const res = await nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.PLUTO, {
+        $select: PLUTO_FIELDS,
+        $where: whereClause,
+        $limit: 20,
+      });
+      return res.status === 'success' ? res.data || [] : [];
     }
+
+    // Extract primary street part before comma (e.g., "31-78 25 STREET" from "31-78 25 STREET, Astoria, NY")
+    const streetPart = q.split(',')[0].trim();
+
+    // Generate address search variants
+    const streetVariants = new Set([streetPart]);
+    streetVariants.add(streetPart.replace(/\bSTREET\b/g, 'ST'));
+    streetVariants.add(streetPart.replace(/\bST\b/g, 'STREET'));
+    streetVariants.add(streetPart.replace(/\bAVENUE\b/g, 'AVE'));
+    streetVariants.add(streetPart.replace(/\bAVE\b/g, 'AVENUE'));
+    streetVariants.add(streetPart.replace(/\bROAD\b/g, 'RD'));
+    streetVariants.add(streetPart.replace(/\bRD\b/g, 'ROAD'));
+    streetVariants.add(streetPart.replace(/\bBOULEVARD\b/g, 'BLVD'));
+    streetVariants.add(streetPart.replace(/\bBLVD\b/g, 'BOULEVARD'));
+    streetVariants.add(streetPart.replace(/(\d+)(ST|ND|RD|TH)\b/gi, '$1'));
+
+    const whereConditions = Array.from(streetVariants)
+      .filter(Boolean)
+      .map((v) => `address LIKE '%${v}%'`)
+      .join(' OR ');
 
     const res = await nycOpenDataService.fetchDataset(env.NYC_OPEN_DATA.PLUTO, {
       $select: PLUTO_FIELDS,
-      $where: whereClause,
+      $where: whereConditions,
       $limit: 20,
     });
 
@@ -244,6 +272,33 @@ export const nycOpenDataService = {
     } catch (err) {
       console.warn('[ACRIS Full] Error fetching comprehensive documents:', err.message);
       return { legals: [], master: [], parties: [] };
+    }
+  },
+
+  /**
+   * Fetch Certificates of Occupancy (CO) from DOB NOW / BIS
+   */
+  getCertificateOfOccupancy: async (bin) => {
+    if (!bin || bin === '0') return { status: 'unavailable', data: [] };
+    const cleanBin = String(bin).trim();
+    try {
+      // DOB NOW Certificate of Occupancy dataset: bs8b-p36w
+      const res = await nycOpenDataService.fetchDataset('bs8b-p36w', {
+        bin: cleanBin,
+        $limit: 5,
+        $order: 'issue_date DESC',
+      });
+      if (res.status === 'success' && res.data && res.data.length > 0) {
+        return res;
+      }
+      // Fallback to BIS Certificate of Occupancy dataset: kj4p-ruqc
+      return nycOpenDataService.fetchDataset('kj4p-ruqc', {
+        bin: cleanBin,
+        $limit: 5,
+      });
+    } catch (err) {
+      console.warn('[DOB CO] Error fetching certificates of occupancy:', err.message);
+      return { status: 'unavailable', data: [] };
     }
   },
 };

@@ -1,22 +1,29 @@
 export const developmentService = {
   calculateBuildable: (plutoData) => {
-    const lotArea = Number(plutoData?.lotarea || 12000);
-    const commFar = Number(plutoData?.commfar || 5);
-    const buildingArea = Number(plutoData?.bldgarea || 12000);
+    const lotArea = Number(plutoData?.lotarea || 0);
+    const commFar = Number(plutoData?.commfar || 0);
+    const residFar = Number(plutoData?.residfar || 0);
+    const facilFar = Number(plutoData?.facilfar || 0);
+    const buildingArea = Number(plutoData?.bldgarea || 0);
+    const builtFar = Number(plutoData?.builtfar || 0);
 
-    const maxBuildableSqFt = lotArea * commFar;
-    const remainingBuildableSqFt = Math.max(0, maxBuildableSqFt - buildingArea);
+    const maxAllowableFar = Math.max(commFar, residFar, facilFar, 0);
+    const maxBuildableSqFt = lotArea > 0 && maxAllowableFar > 0 ? Math.round(lotArea * maxAllowableFar) : 0;
+    const remainingBuildableSqFt = maxBuildableSqFt > 0 ? Math.max(0, maxBuildableSqFt - buildingArea) : 0;
 
     return {
       far: {
-        current: Number(plutoData?.builtfar || 1),
+        current: builtFar,
+        built: builtFar,
         commercial: commFar,
-        facility: Number(plutoData?.facilfar || 5),
+        residential: residFar,
+        facility: facilFar,
+        maxFar: maxAllowableFar,
         maxBuildableSqFt,
         remainingBuildableSqFt,
         calculationMetadata: {
           calculated: true,
-          formula: 'lotArea * commFar',
+          formula: 'lotArea * Math.max(commFar, residFar, facilFar)',
           status: 'calculated',
         },
       },
